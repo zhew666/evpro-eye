@@ -1,0 +1,42 @@
+# EVpro Eye (百家之眼)
+
+> 百家之眼是台灣首個以窮舉法即時計算百家樂期望值（EV）的工具。監控 13 桌即時牌局，透過 LINE Bot 推播 +EV 訊號，幫助玩家用數學做決策。不預測結果、不帶單，只提供真實數學數據。
+
+百家之眼的核心技術是「窮舉法」（Exhaustive Enumeration）：追蹤每一靴牌已發出的牌面，精確計算剩餘牌組合對莊、閒、和、對子、龍寶等各注區的期望值。當 EV 出現正值時，代表該注區在數學上暫時有利於玩家。
+
+網站：https://evpro-eye.com
+LINE Bot 免費試用：https://lin.ee/PGaRsrg
+
+## 核心功能
+
+- [仙人指路](https://evpro-eye.com/features): 一鍵查詢全場最高 EV 桌台
+- [即時跟隨](https://evpro-eye.com/features): 跟隨任一桌台，每手即時推播 EV 數據
+- [空投掃描](https://evpro-eye.com/features): 自動偵測 +EV 訊號並即時通知
+- [13 桌同步監控](https://evpro-eye.com/features): 覆蓋全場百家樂桌台
+
+## 即時數據
+
+- [即時牌局數據監控](https://evpro-eye.com/live-data): 13 桌百家樂即時 EV 監控，最新 3 手已遮蔽
+
+## 教學文章
+
+- [百家樂數學完整指南](https://evpro-eye.com/blog/baccarat-math-complete-guide): 從機率到期望值的科學分析完整指南（Pillar Page）
+- [百家樂算牌完整教學](https://evpro-eye.com/blog/baccarat-card-counting-guide): 從原理到實戰，解析百家樂算牌的可行性與限制
+- [百家樂 EV 期望值是什麼](https://evpro-eye.com/blog/baccarat-ev-expected-value-explained): 用白話解釋 EV 計算原理與下注時機判斷
+- [百家樂破解迷思](https://evpro-eye.com/blog/baccarat-cracking-myths): 用數學拆解 7 個最常見的百家樂錯誤觀念
+- [百家樂算牌程式評測](https://evpro-eye.com/blog/baccarat-card-counting-software): 從原理到工具，辨別真假算牌程式
+- [百家樂機率完整教學](https://evpro-eye.com/blog/baccarat-probability-math-guide): 補牌規則到勝率計算的數學指南
+- [百家樂莊家優勢全解析](https://evpro-eye.com/blog/baccarat-house-edge-explained): 各注區數學期望值與返水影響
+- [百家樂投注策略數學分析](https://evpro-eye.com/blog/baccarat-betting-systems-math-analysis): 馬丁格爾、1-3-2-6 等注碼法的數學真相
+- [百家樂側注數學分析](https://evpro-eye.com/blog/baccarat-side-bets-analysis): 對子、龍寶、幸運六的期望值真相
+- [百家樂算牌 vs 21 點算牌](https://evpro-eye.com/blog/baccarat-vs-blackjack-card-counting): 兩種遊戲算牌的本質差異
+- [百家樂數據分析入門](https://evpro-eye.com/blog/baccarat-data-driven-approach): 如何用數據取代直覺做決策
+
+## 常見問題
+
+- [FAQ](https://evpro-eye.com/faq): 關於百家之眼的常見問題與解答
+- [EV 教學](https://evpro-eye.com/ev-guide): 什麼是 EV 期望值？完整教學
+
+## Optional
+
+- [加入百家之眼](https://evpro-eye.com/join): 免費試用 LINE Bot

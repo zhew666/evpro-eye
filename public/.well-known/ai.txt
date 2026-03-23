@@ -1,0 +1,12 @@
+# AI Crawler Policy for evpro-eye.com
+# 百家之眼 EVpro Eye
+
+User-Agent: *
+Allow: /
+
+# We welcome AI crawlers to index our content
+# Our content is educational and focuses on baccarat mathematics
+
+Contact: https://lin.ee/PGaRsrg
+Policy: https://evpro-eye.com/llms.txt
+Sitemap: https://evpro-eye.com/sitemap.xml

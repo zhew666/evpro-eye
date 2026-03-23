@@ -1,0 +1,19 @@
+@import "tailwindcss";
+@plugin "@tailwindcss/typography";
+
+@theme inline {
+  --color-primary: #1a1a2e;
+  --color-primary-light: #25254a;
+  --color-accent: #d4af37;
+  --color-accent-hover: #e6c350;
+  --color-bg: #0f0f1a;
+  --color-bg-card: #16162a;
+  --color-text: #e8e8f0;
+  --color-text-muted: #9999b3;
+  --font-sans: var(--font-noto-sans-tc);
+}
+
+body {
+  background-color: var(--color-bg);
+  color: var(--color-text);
+}
