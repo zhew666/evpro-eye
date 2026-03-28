@@ -94,7 +94,7 @@ export default function Home() {
             免費試用 LINE Bot
           </a>
           <p className="mt-4 text-text-muted text-sm">
-            加入後輸入 <code className="text-accent font-bold">LUCKY777</code> 獲得額外試用時間
+            加入後輸入 <code className="text-accent font-bold">LUCKY777</code> 獲得 6 小時免費試用
           </p>
         </div>
       </section>
@@ -275,7 +275,7 @@ export default function Home() {
             加入 LINE 好友，立即免費體驗
           </a>
           <p className="mt-4 text-text-muted text-sm">
-            加入後輸入 <code className="text-accent font-bold">LUCKY777</code> 獲得額外試用時間
+            加入後輸入 <code className="text-accent font-bold">LUCKY777</code> 獲得 6 小時免費試用
           </p>
         </div>
       </section>

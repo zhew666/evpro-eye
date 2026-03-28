@@ -81,7 +81,7 @@ export default function LiveDataPage() {
             免費加入 LINE Bot
           </a>
           <p className="mt-4 text-text-muted text-sm">
-            加入後輸入 <code className="text-accent font-bold">LUCKY777</code> 獲得額外試用時間
+            加入後輸入 <code className="text-accent font-bold">LUCKY777</code> 獲得 6 小時免費試用
           </p>
         </div>
       </section>
