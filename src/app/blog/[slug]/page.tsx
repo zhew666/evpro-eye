@@ -210,6 +210,9 @@ export default async function ArticlePage({ params }: Props) {
         >
           免費加入 LINE Bot
         </a>
+        <p className="mt-3 text-text-muted text-xs">
+          加入後輸入 <code className="text-accent font-bold">LUCKY777</code> 獲得額外試用時間
+        </p>
       </div>
 
       {/* Related Articles */}
