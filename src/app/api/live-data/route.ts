@@ -3,27 +3,30 @@ import { NextResponse } from "next/server";
 const SUPABASE_URL = process.env.SUPABASE_URL || "";
 const SUPABASE_ANON_KEY = process.env.SUPABASE_ANON_KEY || "";
 
-interface HandRow {
+interface LiveRow {
   table_id: string;
+  platform: string;
   shoe: number;
   hand_num: number;
-  dealer: string;
+  dealer: string | null;
   p1: string;
   p2: string;
-  p3: string;
+  p3: string | null;
   b1: string;
   b2: string;
-  b3: string;
+  b3: string | null;
   ev_player: number;
   ev_banker: number;
   ev_tie: number;
   ev_pair_p: number;
   ev_pair_b: number;
   ev_super6: number;
+  updated_at: string;
 }
 
-interface MaskedHand {
+interface DisplayHand {
   table_id: string;
+  platform: string;
   shoe: number;
   hand_num: number;
   dealer: string;
@@ -43,40 +46,37 @@ interface MaskedHand {
 }
 
 const MASK = "****";
-const HANDS_PER_TABLE = 6;
-const MASKED_COUNT = 3; // latest 3 hands are masked
 
-function maskHand(hand: HandRow): MaskedHand {
+function maskHand(row: LiveRow): DisplayHand {
   return {
-    table_id: hand.table_id,
-    shoe: hand.shoe,
-    hand_num: hand.hand_num,
-    dealer: hand.dealer,
-    p1: MASK,
-    p2: MASK,
-    p3: MASK,
-    b1: MASK,
-    b2: MASK,
-    b3: MASK,
-    ev_player: MASK,
-    ev_banker: MASK,
-    ev_tie: MASK,
-    ev_pair_p: MASK,
-    ev_pair_b: MASK,
-    ev_super6: MASK,
+    table_id: row.table_id,
+    platform: row.platform,
+    shoe: row.shoe,
+    hand_num: row.hand_num,
+    dealer: row.dealer || "",
+    p1: MASK, p2: MASK, p3: MASK,
+    b1: MASK, b2: MASK, b3: MASK,
+    ev_player: MASK, ev_banker: MASK, ev_tie: MASK,
+    ev_pair_p: MASK, ev_pair_b: MASK, ev_super6: MASK,
     masked: true,
   };
 }
 
-function revealHand(hand: HandRow): MaskedHand {
+function revealHand(row: LiveRow): DisplayHand {
   return {
-    ...hand,
-    ev_player: hand.ev_player?.toFixed(4) ?? "0",
-    ev_banker: hand.ev_banker?.toFixed(4) ?? "0",
-    ev_tie: hand.ev_tie?.toFixed(4) ?? "0",
-    ev_pair_p: hand.ev_pair_p?.toFixed(4) ?? "0",
-    ev_pair_b: hand.ev_pair_b?.toFixed(4) ?? "0",
-    ev_super6: hand.ev_super6?.toFixed(4) ?? "0",
+    table_id: row.table_id,
+    platform: row.platform,
+    shoe: row.shoe,
+    hand_num: row.hand_num,
+    dealer: row.dealer || "",
+    p1: row.p1, p2: row.p2, p3: row.p3 || "",
+    b1: row.b1, b2: row.b2, b3: row.b3 || "",
+    ev_player: row.ev_player?.toFixed(4) ?? "0",
+    ev_banker: row.ev_banker?.toFixed(4) ?? "0",
+    ev_tie: row.ev_tie?.toFixed(4) ?? "0",
+    ev_pair_p: row.ev_pair_p?.toFixed(4) ?? "0",
+    ev_pair_b: row.ev_pair_b?.toFixed(4) ?? "0",
+    ev_super6: row.ev_super6?.toFixed(4) ?? "0",
     masked: false,
   };
 }
@@ -90,8 +90,7 @@ export async function GET() {
   }
 
   try {
-    // Fetch recent hands: last 80 rows ordered by shoe desc, hand_num desc
-    const url = `${SUPABASE_URL}/rest/v1/baccarat_hands?select=table_id,shoe,hand_num,dealer,p1,p2,p3,b1,b2,b3,ev_player,ev_banker,ev_tie,ev_pair_p,ev_pair_b,ev_super6&order=shoe.desc,hand_num.desc&limit=80`;
+    const url = `${SUPABASE_URL}/rest/v1/live_tables?select=table_id,platform,shoe,hand_num,dealer,p1,p2,p3,b1,b2,b3,ev_player,ev_banker,ev_tie,ev_pair_p,ev_pair_b,ev_super6,updated_at&order=platform.asc,table_id.asc`;
 
     const res = await fetch(url, {
       headers: {
@@ -108,36 +107,37 @@ export async function GET() {
       );
     }
 
-    const rows: HandRow[] = await res.json();
+    const rows: LiveRow[] = await res.json();
 
-    // Group by table_id, keep latest HANDS_PER_TABLE per table
-    const tableMap = new Map<string, HandRow[]>();
-    for (const row of rows) {
-      const arr = tableMap.get(row.table_id) || [];
-      if (arr.length < HANDS_PER_TABLE) {
-        arr.push(row);
-        tableMap.set(row.table_id, arr);
-      }
-    }
+    // Split by platform, mask EV for display (reveal cards but mask EV to drive LINE signup)
+    const tables = rows.map((row) => {
+      // Show cards but mask EV values to create curiosity
+      const hand = maskHand(row);
+      // Reveal cards only (not EV)
+      hand.p1 = row.p1;
+      hand.p2 = row.p2;
+      hand.p3 = row.p3 || "";
+      hand.b1 = row.b1;
+      hand.b2 = row.b2;
+      hand.b3 = row.b3 || "";
+      hand.dealer = row.dealer || "";
+      return {
+        table_id: row.table_id,
+        platform: row.platform,
+        hand,
+      };
+    });
 
-    // Build response: mask latest MASKED_COUNT, reveal the rest
-    const tables: { table_id: string; hands: MaskedHand[] }[] = [];
-
-    for (const [tableId, hands] of tableMap) {
-      const processed = hands.map((hand, idx) =>
-        idx < MASKED_COUNT ? maskHand(hand) : revealHand(hand)
-      );
-      tables.push({ table_id: tableId, hands: processed });
-    }
-
-    // Sort tables by table_id
-    tables.sort((a, b) => a.table_id.localeCompare(b.table_id));
+    const mtCount = rows.filter(r => r.platform === "MT").length;
+    const dgCount = rows.filter(r => r.platform === "DG").length;
 
     return NextResponse.json({
       tables,
       updated_at: new Date().toISOString(),
       total_tables: tables.length,
-      note: "最新 3 手數據已遮蔽，加入 LINE Bot 查看完整即時資訊",
+      mt_tables: mtCount,
+      dg_tables: dgCount,
+      note: "EV 數據已遮蔽，加入 LINE Bot 查看完整即時資訊",
     });
   } catch {
     return NextResponse.json(
