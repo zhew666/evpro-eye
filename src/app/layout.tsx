@@ -34,6 +34,13 @@ export const metadata: Metadata = {
     description:
       "以窮舉法即時計算百家樂期望值，即時監控 27 桌，正 EV 出現時透過 LINE Bot 推播通知。",
   },
+  icons: {
+    icon: [
+      { url: "/favicon-32x32.png", sizes: "32x32", type: "image/png" },
+      { url: "/favicon-16x16.png", sizes: "16x16", type: "image/png" },
+    ],
+    apple: "/apple-touch-icon.png",
+  },
   alternates: {
     canonical: "https://evpro-eye.com",
   },

@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import MobileMenu from "./MobileMenu";
 
 const navItems = [
@@ -17,6 +18,13 @@ export default function Header() {
         <div className="flex items-center justify-between h-16">
           {/* Brand */}
           <Link href="/" className="flex items-center gap-2 shrink-0">
+            <Image
+              src="/logo.png"
+              alt="百家之眼"
+              width={36}
+              height={36}
+              className="rounded-full"
+            />
             <span className="text-accent font-bold text-xl tracking-tight">
               百家之眼
             </span>
