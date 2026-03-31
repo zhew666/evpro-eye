@@ -28,7 +28,7 @@ const faqs = [
   {
     question: "體驗期間有什麼限制？",
     answer:
-      "體驗期間你可以使用核心功能，包括仙人指路（查詢最高 EV 桌台）和基本的預期收益查詢。進階功能如即時跟隨、空投掃描等需要訂閱。加 LINE 好友並輸入推薦碼即可開始。",
+      "體驗期間你可以使用核心功能，包括開始報牌（查詢最高預期收益桌台）和基本的預期收益查詢。進階功能如鎖定桌檯、掃描桌檯等需要訂閱。加 LINE 好友並輸入推薦碼即可開始。",
   },
   {
     question: "需要下載 APP 嗎？",
@@ -127,6 +127,9 @@ export default function FaqPage() {
           >
             加入 LINE 好友
           </Link>
+          <p className="text-text-muted text-sm mt-4">
+            推薦碼：<code className="text-accent font-bold">LUCKY777</code>
+          </p>
         </div>
       </section>
     </>

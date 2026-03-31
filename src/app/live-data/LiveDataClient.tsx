@@ -259,6 +259,9 @@ export default function LiveDataClient() {
         >
           加入 LINE Bot 查看完整數據
         </a>
+        <p className="text-text-muted text-xs mt-2">
+          推薦碼：<code className="text-accent font-bold">LUCKY777</code>
+        </p>
       </div>
     </div>
   );

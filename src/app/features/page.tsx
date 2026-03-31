@@ -4,12 +4,12 @@ import Link from "next/link";
 export const metadata: Metadata = {
   title: "功能介紹 — 百家之眼的五大核心功能",
   description:
-    "仙人指路、即時跟隨、空投掃描、13 桌同步監控、窮舉法精確計算。了解百家之眼如何用數學幫你找到 +EV 機會。",
+    "開始報牌、鎖定桌檯、掃描桌檯、27 桌同步監控、窮舉法精確計算。了解百家之眼如何用數學幫你找到正預期收益機會。",
   alternates: { canonical: "https://evpro-eye.com/features" },
   openGraph: {
     title: "功能介紹 — 百家之眼的五大核心功能",
     description:
-      "仙人指路、即時跟隨、空投掃描、13 桌同步監控、窮舉法精確計算。了解百家之眼如何用數學幫你找到 +EV 機會。",
+      "開始報牌、鎖定桌檯、掃描桌檯、27 桌同步監控、窮舉法精確計算。了解百家之眼如何用數學幫你找到正預期收益機會。",
     url: "https://evpro-eye.com/features",
   },
 };
@@ -17,34 +17,34 @@ export const metadata: Metadata = {
 const features = [
   {
     icon: "🧭",
-    title: "仙人指路",
-    subtitle: "一鍵查詢全場最高 EV",
+    title: "開始報牌",
+    subtitle: "一鍵查詢全場最高預期收益",
     description:
-      "不知道該看哪桌？仙人指路幫你從 13 桌中找出目前 EV 最高的桌台。一個指令，省去逐桌比較的時間，直接鎖定最有利的機會。",
+      "不知道該看哪桌？開始報牌幫你從所有桌台中找出目前預期收益最高的桌台。一個指令，省去逐桌比較的時間，直接鎖定最有利的機會。",
     highlight: "一鍵找出最佳機會",
   },
   {
     icon: "👁",
-    title: "即時跟隨",
-    subtitle: "跟隨任一桌台，每手推播 EV",
+    title: "鎖定桌檯",
+    subtitle: "鎖定任一桌台，每手推播預期收益",
     description:
-      "選定目標桌台後，系統每手自動推播 EV 數據到你的 LINE。莊 EV、閒 EV、牌靴剩餘張數一目了然，不用反覆查詢。",
+      "選定目標桌台後，系統每手自動推播預期收益數據到你的 LINE。莊、閒預期收益與牌靴剩餘張數一目了然，不用反覆查詢。",
     highlight: "每手自動推播",
   },
   {
     icon: "🎯",
-    title: "空投掃描",
-    subtitle: "自動偵測 +EV 並即時通知",
+    title: "掃描桌檯",
+    subtitle: "自動偵測正預期收益並即時通知",
     description:
-      "系統 24 小時監控所有桌台，一旦偵測到正 EV（+EV）機會，立即推播通知。你只需要等待通知，不必盯盤。這是最輕鬆的使用方式。",
-    highlight: "+EV 自動通知",
+      "系統 24 小時監控所有桌台，一旦偵測到正預期收益機會，立即推播通知。你只需要等待通知，不必盯盤。這是最輕鬆的使用方式。",
+    highlight: "正預期收益自動通知",
   },
   {
     icon: "🖥",
-    title: "13 桌同步監控",
+    title: "27 桌同步監控",
     subtitle: "全場覆蓋，不漏任何機會",
     description:
-      "百家之眼同時監控 13 張百家樂桌台的牌面變化，即時追蹤每桌的牌靴狀態與 EV 數據。系統不休息，比你更勤奮。",
+      "百家之眼同時監控 27 張百家樂桌台的牌面變化，即時追蹤每桌的牌靴狀態與預期收益數據。系統不休息，比你更勤奮。",
     highlight: "24 小時全場監控",
   },
   {
@@ -125,6 +125,9 @@ export default function FeaturesPage() {
           >
             立即體驗
           </Link>
+          <p className="text-text-muted text-sm mt-4">
+            推薦碼：<code className="text-accent font-bold">LUCKY777</code>
+          </p>
         </div>
       </section>
     </>

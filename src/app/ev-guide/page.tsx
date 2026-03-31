@@ -147,6 +147,9 @@ export default function EvGuidePage() {
             >
               立即體驗
             </Link>
+            <p className="text-text-muted text-sm mt-4">
+              推薦碼：<code className="text-accent font-bold">LUCKY777</code>
+            </p>
           </div>
         </div>
       </section>
