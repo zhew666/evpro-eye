@@ -24,8 +24,21 @@ export const metadata: Metadata = {
 };
 
 export default function LiveDataPage() {
+  const breadcrumbJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "首頁", item: "https://evpro-eye.com" },
+      { "@type": "ListItem", position: 2, name: "即時數據", item: "https://evpro-eye.com/live-data" },
+    ],
+  };
+
   return (
     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
+      />
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{

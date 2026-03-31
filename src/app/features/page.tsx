@@ -58,8 +58,21 @@ const features = [
 ];
 
 export default function FeaturesPage() {
+  const breadcrumbJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "首頁", item: "https://evpro-eye.com" },
+      { "@type": "ListItem", position: 2, name: "功能介紹", item: "https://evpro-eye.com/features" },
+    ],
+  };
+
   return (
     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
+      />
       {/* Hero */}
       <section className="bg-gradient-to-b from-bg via-primary to-bg py-20 px-4">
         <div className="max-w-3xl mx-auto text-center">

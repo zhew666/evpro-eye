@@ -14,8 +14,14 @@ export interface ArticleMeta {
   created_date: string;
 }
 
+export interface FAQ {
+  question: string;
+  answer: string;
+}
+
 export interface Article extends ArticleMeta {
   content: string; // HTML content
+  faqs: FAQ[];
 }
 
 export function getAllArticles(): ArticleMeta[] {
@@ -76,12 +82,40 @@ export async function getArticleBySlug(
         'href="/blog/$1"'
       );
 
+      // Extract FAQs from markdown (### Q1：question → next paragraph = answer)
+      const faqs = extractFAQs(content);
+
       return {
         ...meta,
         content: htmlContent,
+        faqs,
       };
     }
   }
 
   return null;
+}
+
+function extractFAQs(markdown: string): FAQ[] {
+  const faqs: FAQ[] = [];
+  const lines = markdown.split("\n");
+
+  for (let i = 0; i < lines.length; i++) {
+    const match = lines[i].match(/^###\s+Q\d+[：:]\s*(.+)/);
+    if (!match) continue;
+
+    const question = match[1].trim();
+    // Collect answer lines until next heading or empty section
+    const answerLines: string[] = [];
+    for (let j = i + 1; j < lines.length; j++) {
+      const line = lines[j];
+      if (line.startsWith("### ") || line.startsWith("## ") || line.startsWith("---")) break;
+      if (line.trim()) answerLines.push(line.trim());
+    }
+    if (answerLines.length > 0) {
+      faqs.push({ question, answer: answerLines.join(" ") });
+    }
+  }
+
+  return faqs;
 }

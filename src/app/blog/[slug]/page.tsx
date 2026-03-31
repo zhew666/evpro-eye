@@ -63,6 +63,8 @@ export default async function ArticlePage({ params }: Props) {
     headline: article.title,
     description: article.meta_description,
     datePublished: article.created_date,
+    dateModified: article.created_date,
+    image: `https://evpro-eye.com/blog/${slug}/opengraph-image`,
     author: {
       "@type": "Organization",
       name: "百家之眼 EVpro Eye",
@@ -75,6 +77,23 @@ export default async function ArticlePage({ params }: Props) {
     mainEntityOfPage: `https://evpro-eye.com/blog/${slug}`,
     keywords: article.keywords.join(", "),
   };
+
+  // FAQPage JSON-LD (auto-extracted from article)
+  const faqJsonLd =
+    article.faqs.length > 0
+      ? {
+          "@context": "https://schema.org",
+          "@type": "FAQPage",
+          mainEntity: article.faqs.map((faq) => ({
+            "@type": "Question",
+            name: faq.question,
+            acceptedAnswer: {
+              "@type": "Answer",
+              text: faq.answer,
+            },
+          })),
+        }
+      : null;
 
   // BreadcrumbList JSON-LD
   const breadcrumbJsonLd = {
@@ -112,6 +131,12 @@ export default async function ArticlePage({ params }: Props) {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
       />
+      {faqJsonLd && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
+        />
+      )}
 
       {/* Breadcrumb */}
       <nav className="text-sm text-text-muted mb-8">
