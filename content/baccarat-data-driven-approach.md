@@ -120,7 +120,7 @@ created_date: 2026-03-23
 
 理解了數據分析的三個層次後，接下來是最實用的部分——拿到 EV 數據後，到底怎麼看、怎麼用？
 
-如果你對 EV（期望值）的概念還不熟悉，建議先閱讀 [百家樂 EV 期望值完整解析](/seo-articles/baccarat-ev-expected-value-explained)，再回來看這個實戰教學。
+如果你對 EV（期望值）的概念還不熟悉，建議先閱讀 [百家樂 EV 期望值完整解析](/blog/baccarat-ev-expected-value-explained)，再回來看這個實戰教學。
 
 ### EV 正值代表什麼
 
@@ -161,7 +161,7 @@ EV 是 Expected Value（期望值）的縮寫，代表的是：**每下注 1 元
 
 實戰上的啟示是：如果你只盯著莊閒看，能捕捉到的機會非常有限。真正的百家樂數據分析玩家，會同時監控所有注區的 EV 變化，在任何一個注區出現有利偏移時出手。
 
-想深入了解如何用程式工具做即時 EV 監控，可以參考 [百家樂算牌程式完整解析](/seo-articles/baccarat-card-counting-software)。
+想深入了解如何用程式工具做即時 EV 監控，可以參考 [百家樂算牌程式完整解析](/blog/baccarat-card-counting-software)。
 
 ---
 

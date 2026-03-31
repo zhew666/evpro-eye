@@ -14,6 +14,13 @@ export const metadata: Metadata = {
     "DG百家樂",
     "MT百家樂",
   ],
+  alternates: { canonical: "https://evpro-eye.com/live-data" },
+  openGraph: {
+    title: "即時牌局數據 — MT 13桌 + DG 14桌 百家樂 EV 監控",
+    description:
+      "即時查看 MT 13 桌 + DG 14 桌百家樂牌局數據與 EV 期望值分析。加入 LINE Bot 查看完整即時 EV 資訊。",
+    url: "https://evpro-eye.com/live-data",
+  },
 };
 
 export default function LiveDataPage() {
@@ -34,7 +41,7 @@ export default function LiveDataPage() {
               "@type": "Offer",
               price: "0",
               priceCurrency: "TWD",
-              description: "免費試用 LINE Bot",
+              description: "加入 LINE Bot 體驗",
             },
           }),
         }}
@@ -78,10 +85,10 @@ export default function LiveDataPage() {
             rel="noopener noreferrer"
             className="inline-flex items-center px-8 py-4 bg-accent text-primary font-bold text-lg rounded-lg hover:bg-accent-hover transition-colors shadow-lg shadow-accent/20"
           >
-            免費加入 LINE Bot
+            加入 LINE Bot
           </a>
           <p className="mt-4 text-text-muted text-sm">
-            加入後輸入 <code className="text-accent font-bold">LUCKY777</code> 獲得 6 小時免費試用
+            加入後輸入推薦碼 <code className="text-accent font-bold">LUCKY777</code> 即可開始體驗
           </p>
         </div>
       </section>

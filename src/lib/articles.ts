@@ -70,9 +70,9 @@ export async function getArticleBySlug(
       let htmlContent = processedContent.toString();
 
       // Convert internal relative links to /blog/ paths
-      // Handles both (slug-name) and (slug-name.md) formats
+      // Handles: relative slugs, .md suffixes, and /seo-articles/ legacy paths
       htmlContent = htmlContent.replace(
-        /href="(baccarat-[a-z0-9-]+?)(?:\.md)?"/g,
+        /href="(?:\/seo-articles\/|\/blog\/)?((?:baccarat|dg)-[a-z0-9-]+?)(?:\.md)?"/g,
         'href="/blog/$1"'
       );
 

@@ -57,7 +57,7 @@ created_date: 2026-03-23
 
 差距是十倍級別的。下面我們逐一拆解為什麼。
 
-（想先了解莊家優勢的完整概念，可以參考：[百家樂莊家優勢完整解析](/seo-articles/baccarat-house-edge-explained)）
+（想先了解莊家優勢的完整概念，可以參考：[百家樂莊家優勢完整解析](/blog/baccarat-house-edge-explained)）
 
 ### 對子注數學分析
 
@@ -163,7 +163,7 @@ EV = **-0.3019**（即 -30.19%）
 
 用統計學的語言說：**側注的結果變異數（Variance）對牌堆組成的敏感度，遠高於主注。**
 
-（想深入理解 EV 期望值的概念，推薦閱讀：[百家樂 EV 期望值完整解析](/seo-articles/baccarat-ev-expected-value-explained)）
+（想深入理解 EV 期望值的概念，推薦閱讀：[百家樂 EV 期望值完整解析](/blog/baccarat-ev-expected-value-explained)）
 
 ### 對子注的 EV 波動實例
 

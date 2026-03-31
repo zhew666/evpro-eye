@@ -17,8 +17,26 @@ export const metadata: Metadata = {
     default: "百家之眼 EVpro Eye — 百家樂 EV 期望值即時分析",
   },
   description:
-    "以窮舉法即時計算百家樂期望值，用數學取代玄學。免費試用 LINE Bot。",
+    "以窮舉法即時計算百家樂期望值，即時監控 MT 13 桌 + DG 14 桌，正 EV 出現時透過 LINE Bot 推播通知。用數學取代玄學。",
   metadataBase: new URL("https://evpro-eye.com"),
+  openGraph: {
+    type: "website",
+    locale: "zh_TW",
+    siteName: "百家之眼 EVpro Eye",
+    title: "百家之眼 EVpro Eye — 百家樂 EV 期望值即時分析",
+    description:
+      "以窮舉法即時計算百家樂期望值，即時監控 MT 13 桌 + DG 14 桌，正 EV 出現時透過 LINE Bot 推播通知。",
+    url: "https://evpro-eye.com",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "百家之眼 EVpro Eye — 百家樂 EV 期望值即時分析",
+    description:
+      "以窮舉法即時計算百家樂期望值，即時監控 27 桌，正 EV 出現時透過 LINE Bot 推播通知。",
+  },
+  alternates: {
+    canonical: "https://evpro-eye.com",
+  },
 };
 
 export default function RootLayout({

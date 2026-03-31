@@ -5,6 +5,13 @@ export const metadata: Metadata = {
   title: "什麼是 EV 期望值？百家樂 EV 完整教學",
   description:
     "用白話解釋 EV（期望值）在百家樂中的意義，了解窮舉法如何精確計算每一手的真實期望值。",
+  alternates: { canonical: "https://evpro-eye.com/ev-guide" },
+  openGraph: {
+    title: "什麼是 EV 期望值？百家樂 EV 完整教學",
+    description:
+      "用白話解釋 EV（期望值）在百家樂中的意義，了解窮舉法如何精確計算每一手的真實期望值。",
+    url: "https://evpro-eye.com/ev-guide",
+  },
 };
 
 const sections = [
@@ -132,13 +139,13 @@ export default function EvGuidePage() {
               想即時取得 EV 數據？
             </h3>
             <p className="text-text-muted mb-8">
-              加入百家之眼 LINE，免費體驗即時 EV 分析。
+              加入百家之眼 LINE，輸入推薦碼即可體驗即時預期收益分析。
             </p>
             <Link
               href="/join"
               className="inline-flex items-center px-8 py-4 bg-accent text-primary font-bold text-lg rounded-lg hover:bg-accent-hover transition-colors"
             >
-              免費試用
+              立即體驗
             </Link>
           </div>
         </div>

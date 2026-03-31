@@ -5,6 +5,13 @@ export const metadata: Metadata = {
   title: "功能介紹 — 百家之眼的五大核心功能",
   description:
     "仙人指路、即時跟隨、空投掃描、13 桌同步監控、窮舉法精確計算。了解百家之眼如何用數學幫你找到 +EV 機會。",
+  alternates: { canonical: "https://evpro-eye.com/features" },
+  openGraph: {
+    title: "功能介紹 — 百家之眼的五大核心功能",
+    description:
+      "仙人指路、即時跟隨、空投掃描、13 桌同步監控、窮舉法精確計算。了解百家之眼如何用數學幫你找到 +EV 機會。",
+    url: "https://evpro-eye.com/features",
+  },
 };
 
 const features = [
@@ -110,13 +117,13 @@ export default function FeaturesPage() {
             準備好體驗了嗎？
           </h2>
           <p className="text-text-muted text-lg mb-10">
-            加入 LINE 好友，所有功能免費試用。
+            加入 LINE 好友，輸入推薦碼即可體驗所有功能。
           </p>
           <Link
             href="/join"
             className="inline-flex items-center px-8 py-4 bg-accent text-primary font-bold text-lg rounded-lg hover:bg-accent-hover transition-colors shadow-lg shadow-accent/20"
           >
-            立即免費試用
+            立即體驗
           </Link>
         </div>
       </section>

@@ -6,6 +6,13 @@ export const metadata: Metadata = {
   title: "百家樂數學研究 | 部落格",
   description:
     "百家樂算牌、期望值、破解迷思...用數學看懂百家樂的每一個面向。",
+  alternates: { canonical: "https://evpro-eye.com/blog" },
+  openGraph: {
+    title: "百家樂數學研究 | 部落格",
+    description:
+      "百家樂算牌、期望值、破解迷思...用數學看懂百家樂的每一個面向。",
+    url: "https://evpro-eye.com/blog",
+  },
 };
 
 export default function BlogListPage() {

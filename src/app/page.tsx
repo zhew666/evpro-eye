@@ -91,10 +91,10 @@ export default function Home() {
             rel="noopener noreferrer"
             className="inline-flex items-center px-8 py-4 bg-accent text-primary font-bold text-lg rounded-lg hover:bg-accent-hover transition-colors shadow-lg shadow-accent/20"
           >
-            免費試用 LINE Bot
+            加入 LINE Bot
           </a>
           <p className="mt-4 text-text-muted text-sm">
-            加入後輸入 <code className="text-accent font-bold">LUCKY777</code> 獲得 6 小時免費試用
+            加入後輸入推薦碼 <code className="text-accent font-bold">LUCKY777</code> 即可開始體驗
           </p>
         </div>
       </section>
@@ -264,7 +264,7 @@ export default function Home() {
             <span className="text-accent">百家樂體驗</span>？
           </h2>
           <p className="text-text-muted text-lg mb-10">
-            加入 LINE 好友，立即免費體驗百家之眼的數學分析服務。
+            加入 LINE 好友，輸入推薦碼即可體驗百家之眼的數學分析服務。
           </p>
           <a
             href="https://lin.ee/PGaRsrg"
@@ -272,10 +272,10 @@ export default function Home() {
             rel="noopener noreferrer"
             className="inline-flex items-center px-8 py-4 bg-accent text-primary font-bold text-lg rounded-lg hover:bg-accent-hover transition-colors shadow-lg shadow-accent/20"
           >
-            加入 LINE 好友，立即免費體驗
+            加入 LINE 好友，立即體驗
           </a>
           <p className="mt-4 text-text-muted text-sm">
-            加入後輸入 <code className="text-accent font-bold">LUCKY777</code> 獲得 6 小時免費試用
+            加入後輸入推薦碼 <code className="text-accent font-bold">LUCKY777</code> 即可開始體驗
           </p>
         </div>
       </section>

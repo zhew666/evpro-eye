@@ -1,9 +1,16 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "立即加入 — 免費體驗百家之眼",
+  title: "立即加入 — 體驗百家之眼即時預期收益分析",
   description:
-    "三步驟加入百家之眼：掃碼加好友、輸入活動碼 evpro、開始免費試用 EV 即時分析。",
+    "三步驟加入百家之眼：掃碼加好友、輸入推薦碼、開始體驗即時預期收益分析。用數學取代玄學。",
+  alternates: { canonical: "https://evpro-eye.com/join" },
+  openGraph: {
+    title: "立即加入 — 體驗百家之眼即時預期收益分析",
+    description:
+      "三步驟加入百家之眼：掃碼加好友、輸入推薦碼、開始體驗即時預期收益分析。",
+    url: "https://evpro-eye.com/join",
+  },
 };
 
 const LINE_URL = "https://lin.ee/PGaRsrg";
@@ -16,14 +23,14 @@ const steps = [
   },
   {
     step: "2",
-    title: "輸入活動碼",
-    description: "在聊天室中輸入活動碼開通免費試用資格。",
+    title: "輸入推薦碼",
+    description: "在聊天室中輸入推薦碼即可開通體驗資格。",
   },
   {
     step: "3",
-    title: "開始免費試用",
+    title: "開始體驗",
     description:
-      "立即使用仙人指路、EV 查詢等功能，體驗數學分析的力量。",
+      "立即使用仙人指路、預期收益查詢等功能，體驗數學分析的力量。",
   },
 ];
 
@@ -87,14 +94,14 @@ export default function JoinPage() {
 
           {/* Activation code */}
           <div className="mt-12 bg-bg-card border border-accent/30 rounded-xl p-8 text-center">
-            <p className="text-text-muted text-sm mb-3">免費試用活動碼</p>
+            <p className="text-text-muted text-sm mb-3">推薦碼</p>
             <div className="inline-block bg-primary px-8 py-4 rounded-lg">
               <code className="text-accent text-3xl sm:text-4xl font-bold font-mono tracking-widest">
-                evpro
+                LUCKY777
               </code>
             </div>
             <p className="text-text-muted text-sm mt-4">
-              加入好友後，在聊天室中輸入此活動碼即可啟動免費試用
+              加入好友後，在聊天室中輸入推薦碼即可開始體驗
             </p>
           </div>
         </div>

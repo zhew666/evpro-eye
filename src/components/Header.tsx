@@ -45,7 +45,7 @@ export default function Header() {
             rel="noopener noreferrer"
             className="hidden md:inline-flex items-center px-4 py-2 bg-accent text-primary text-sm font-bold rounded hover:bg-accent-hover transition-colors"
           >
-            免費試用
+            立即體驗
           </a>
 
           {/* Mobile menu */}
