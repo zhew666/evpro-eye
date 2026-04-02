@@ -426,13 +426,25 @@ export default function LiveDataClient() {
                           </span>
                         </div>
                         {ev && (
-                          <div className="flex gap-2 mt-1 ml-8 text-[10px] font-mono text-text-muted">
-                            <span>莊<span className={parseFloat(ev.ev_banker) > 0 ? "text-green-400" : ""}>{parseFloat(ev.ev_banker) > 0 ? "+" : ""}{(parseFloat(ev.ev_banker) * 100).toFixed(2)}%</span></span>
-                            <span>閒<span className={parseFloat(ev.ev_player) > 0 ? "text-green-400" : ""}>{parseFloat(ev.ev_player) > 0 ? "+" : ""}{(parseFloat(ev.ev_player) * 100).toFixed(2)}%</span></span>
-                            <span>和<span className={parseFloat(ev.ev_tie) > 0 ? "text-green-400" : ""}>{parseFloat(ev.ev_tie) > 0 ? "+" : ""}{(parseFloat(ev.ev_tie) * 100).toFixed(2)}%</span></span>
-                            <span>S6<span className={parseFloat(ev.ev_super6) > 0 ? "text-green-400" : ""}>{parseFloat(ev.ev_super6) > 0 ? "+" : ""}{(parseFloat(ev.ev_super6) * 100).toFixed(2)}%</span></span>
-                            <span>閒對<span className={parseFloat(ev.ev_pair_p) > 0 ? "text-green-400" : ""}>{parseFloat(ev.ev_pair_p) > 0 ? "+" : ""}{(parseFloat(ev.ev_pair_p) * 100).toFixed(2)}%</span></span>
-                            <span>莊對<span className={parseFloat(ev.ev_pair_b) > 0 ? "text-green-400" : ""}>{parseFloat(ev.ev_pair_b) > 0 ? "+" : ""}{(parseFloat(ev.ev_pair_b) * 100).toFixed(2)}%</span></span>
+                          <div className="flex flex-wrap gap-x-2 gap-y-0.5 mt-1 ml-8 text-[10px] font-mono text-text-muted">
+                            {[
+                              { label: "莊", val: ev.ev_banker },
+                              { label: "閒", val: ev.ev_player },
+                              { label: "和", val: ev.ev_tie },
+                              { label: "S6", val: ev.ev_super6 },
+                              { label: "閒對", val: ev.ev_pair_p },
+                              { label: "莊對", val: ev.ev_pair_b },
+                            ].map(({ label, val }) => {
+                              const n = parseFloat(val);
+                              return (
+                                <span key={label}>
+                                  {label}
+                                  <span className={n > 0 ? "text-green-400" : ""}>
+                                    {n > 0 ? "+" : ""}{n.toFixed(4)}
+                                  </span>
+                                </span>
+                              );
+                            })}
                           </div>
                         )}
                       </div>
