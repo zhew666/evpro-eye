@@ -62,8 +62,9 @@ export default function RootLayout({
               "@type": "Organization",
               name: "百家之眼 EVpro Eye",
               url: "https://evpro-eye.com",
+              logo: "https://evpro-eye.com/logo.png",
               description:
-                "台灣首個以窮舉法即時計算百家樂期望值的工具。監控13桌即時牌局，透過LINE Bot推播+EV訊號。",
+                "台灣首個以窮舉法即時計算百家樂期望值的工具。監控27桌即時牌局，透過LINE Bot推播+EV訊號。",
               sameAs: ["https://lin.ee/PGaRsrg"],
             }),
           }}
