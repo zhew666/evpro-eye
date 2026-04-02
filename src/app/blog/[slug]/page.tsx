@@ -239,7 +239,7 @@ export default async function ArticlePage({ params }: Props) {
           rel="noopener noreferrer"
           className="inline-flex items-center px-6 py-3 bg-accent text-primary font-bold rounded-lg hover:bg-accent-hover transition-colors"
         >
-          加入 LINE Bot
+          加入 LINE
         </a>
         <p className="mt-3 text-text-muted text-xs">
           加入後輸入推薦碼 <code className="text-accent font-bold">LUCKY777</code> 即可開始體驗

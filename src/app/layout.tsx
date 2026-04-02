@@ -17,7 +17,7 @@ export const metadata: Metadata = {
     default: "百家之眼 EVpro Eye — 百家樂 EV 期望值即時分析",
   },
   description:
-    "以窮舉法即時計算百家樂期望值，即時監控 MT 13 桌 + DG 14 桌，正 EV 出現時透過 LINE Bot 推播通知。用數學取代玄學。",
+    "以窮舉法即時計算百家樂期望值，即時監控 MT 13 桌 + DG 14 桌，正 EV 出現時透過 LINE 推播通知。用數學取代玄學。",
   metadataBase: new URL("https://evpro-eye.com"),
   openGraph: {
     type: "website",
@@ -25,14 +25,14 @@ export const metadata: Metadata = {
     siteName: "百家之眼 EVpro Eye",
     title: "百家之眼 EVpro Eye — 百家樂 EV 期望值即時分析",
     description:
-      "以窮舉法即時計算百家樂期望值，即時監控 MT 13 桌 + DG 14 桌，正 EV 出現時透過 LINE Bot 推播通知。",
+      "以窮舉法即時計算百家樂期望值，即時監控 MT 13 桌 + DG 14 桌，正 EV 出現時透過 LINE 推播通知。",
     url: "https://evpro-eye.com",
   },
   twitter: {
     card: "summary_large_image",
     title: "百家之眼 EVpro Eye — 百家樂 EV 期望值即時分析",
     description:
-      "以窮舉法即時計算百家樂期望值，即時監控 27 桌，正 EV 出現時透過 LINE Bot 推播通知。",
+      "以窮舉法即時計算百家樂期望值，即時監控 27 桌，正 EV 出現時透過 LINE 推播通知。",
   },
   icons: {
     icon: [
@@ -64,7 +64,7 @@ export default function RootLayout({
               url: "https://evpro-eye.com",
               logo: "https://evpro-eye.com/logo.png",
               description:
-                "台灣首個以窮舉法即時計算百家樂期望值的工具。監控27桌即時牌局，透過LINE Bot推播+EV訊號。",
+                "台灣首個以窮舉法即時計算百家樂期望值的工具。監控27桌即時牌局，透過 LINE 推播+EV訊號。",
               sameAs: ["https://lin.ee/PGaRsrg"],
             }),
           }}

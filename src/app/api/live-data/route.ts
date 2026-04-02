@@ -147,7 +147,7 @@ export async function GET() {
       total_tables: tables.length,
       mt_tables: mtCount,
       dg_tables: dgCount,
-      note: "EV 數據已遮蔽，加入 LINE Bot 查看完整即時資訊",
+      note: "EV 數據已遮蔽，加入 LINE 查看完整即時資訊",
     });
   } catch {
     return NextResponse.json(

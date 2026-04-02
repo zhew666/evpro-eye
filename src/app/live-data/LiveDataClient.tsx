@@ -419,14 +419,14 @@ export default function LiveDataClient() {
 
               {/* CTA */}
               <div className="bg-primary/80 border border-accent/20 rounded-lg p-4 text-center">
-                <p className="text-sm text-text mb-2">加入 LINE Bot 查看即時 EV</p>
+                <p className="text-sm text-text mb-2">加入 LINE 查看即時 EV</p>
                 <a
                   href="https://lin.ee/PGaRsrg"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="inline-flex items-center gap-2 px-5 py-2.5 bg-accent text-primary font-bold text-sm rounded-lg hover:bg-accent-hover transition-colors"
                 >
-                  加入 LINE Bot 查看即時 EV
+                  加入 LINE 查看即時 EV
                 </a>
                 <p className="text-text-muted text-xs mt-2">
                   推薦碼：<code className="text-accent font-bold">LUCKY777</code>
@@ -440,7 +440,7 @@ export default function LiveDataClient() {
       {/* Bottom CTA */}
       <div className="mt-8 text-center">
         <p className="text-text-muted text-sm mb-3">
-          數據每 10 秒更新 / EV 數據加入 LINE Bot 即可查看（推薦碼：<code className="text-accent font-bold">LUCKY777</code>）
+          數據每 10 秒更新 / EV 數據加入 LINE 即可查看（推薦碼：<code className="text-accent font-bold">LUCKY777</code>）
         </p>
       </div>
     </div>

@@ -91,7 +91,7 @@ export default function Home() {
             rel="noopener noreferrer"
             className="inline-flex items-center px-8 py-4 bg-accent text-primary font-bold text-lg rounded-lg hover:bg-accent-hover transition-colors shadow-lg shadow-accent/20"
           >
-            加入 LINE Bot
+            加入 LINE
           </a>
           <p className="mt-4 text-text-muted text-sm">
             加入後輸入推薦碼 <code className="text-accent font-bold">LUCKY777</code> 即可開始體驗
@@ -148,7 +148,7 @@ export default function Home() {
             即時<span className="text-accent">數據監控</span>
           </h2>
           <p className="text-text-muted text-lg mb-8 max-w-2xl mx-auto">
-            24 小時監控 MT 13 桌 + DG 14 桌，共 27 桌百家樂，每手計算精確 EV。最新 3 手數據已遮蔽，加入 LINE Bot 查看完整資訊。
+            24 小時監控 MT 13 桌 + DG 14 桌，共 27 桌百家樂，每手計算精確 EV。最新 3 手數據已遮蔽，加入 LINE 查看完整資訊。
           </p>
           <Link
             href="/live-data"

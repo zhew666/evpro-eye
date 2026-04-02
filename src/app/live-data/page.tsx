@@ -4,7 +4,7 @@ import LiveDataClient from "./LiveDataClient";
 export const metadata: Metadata = {
   title: "即時牌局數據 — MT 13桌 + DG 14桌 百家樂 EV 監控",
   description:
-    "即時查看 MT 13 桌 + DG 14 桌百家樂牌局數據與 EV 期望值分析。加入 LINE Bot 查看完整即時 EV 資訊。",
+    "即時查看 MT 13 桌 + DG 14 桌百家樂牌局數據與 EV 期望值分析。加入 LINE 查看完整即時 EV 資訊。",
   keywords: [
     "百家樂即時數據",
     "百家樂EV監控",
@@ -18,7 +18,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "即時牌局數據 — MT 13桌 + DG 14桌 百家樂 EV 監控",
     description:
-      "即時查看 MT 13 桌 + DG 14 桌百家樂牌局數據與 EV 期望值分析。加入 LINE Bot 查看完整即時 EV 資訊。",
+      "即時查看 MT 13 桌 + DG 14 桌百家樂牌局數據與 EV 期望值分析。加入 LINE 查看完整即時 EV 資訊。",
     url: "https://evpro-eye.com/live-data",
   },
 };
@@ -54,7 +54,7 @@ export default function LiveDataPage() {
               "@type": "Offer",
               price: "0",
               priceCurrency: "TWD",
-              description: "加入 LINE Bot 體驗",
+              description: "加入 LINE 體驗",
             },
           }),
         }}
@@ -70,7 +70,7 @@ export default function LiveDataPage() {
             MT 13 桌 + DG 14 桌百家樂牌局即時更新，每手計算 EV 期望值。
           </p>
           <p className="text-accent text-sm">
-            EV 數據加入 LINE Bot 即可查看完整資訊
+            EV 數據加入 LINE 即可查看完整資訊
           </p>
         </div>
       </section>
@@ -89,7 +89,7 @@ export default function LiveDataPage() {
             想看完整<span className="text-accent">即時 EV 數據</span>？
           </h2>
           <p className="text-text-muted mb-8">
-            加入百家之眼 LINE Bot，即時接收 27 桌完整 EV
+            加入百家之眼 LINE，即時接收 27 桌完整 EV
             數據、+EV 訊號推播，讓數學幫你做決策。
           </p>
           <a
@@ -98,7 +98,7 @@ export default function LiveDataPage() {
             rel="noopener noreferrer"
             className="inline-flex items-center px-8 py-4 bg-accent text-primary font-bold text-lg rounded-lg hover:bg-accent-hover transition-colors shadow-lg shadow-accent/20"
           >
-            加入 LINE Bot
+            加入 LINE
           </a>
           <p className="mt-4 text-text-muted text-sm">
             加入後輸入推薦碼 <code className="text-accent font-bold">LUCKY777</code> 即可開始體驗
