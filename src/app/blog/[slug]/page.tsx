@@ -31,6 +31,12 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     alternates: {
       canonical: `https://evpro-eye.com/blog/${slug}`,
     },
+    openGraph: {
+      title: article.title,
+      description: article.meta_description,
+      url: `https://evpro-eye.com/blog/${slug}`,
+      type: "article",
+    },
   };
 }
 
@@ -225,7 +231,7 @@ export default async function ArticlePage({ params }: Props) {
           想即時接收 +EV 訊號？
         </p>
         <p className="text-text-muted text-sm mb-4">
-          百家之眼 24 小時監控 13 桌，數學幫你做決策。
+          百家之眼 24 小時監控 27 桌，數學幫你做決策。
         </p>
         <a
           href="https://lin.ee/PGaRsrg"

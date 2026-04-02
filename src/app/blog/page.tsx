@@ -18,7 +18,18 @@ export const metadata: Metadata = {
 export default function BlogListPage() {
   const articles = getAllArticles();
 
+  const breadcrumbJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "首頁", item: "https://evpro-eye.com" },
+      { "@type": "ListItem", position: 2, name: "部落格", item: "https://evpro-eye.com/blog" },
+    ],
+  };
+
   return (
+    <>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }} />
     <div className="max-w-4xl mx-auto px-4 py-16">
       {/* Breadcrumb */}
       <nav className="text-sm text-text-muted mb-8">
@@ -74,5 +85,6 @@ export default function BlogListPage() {
         })}
       </div>
     </div>
+    </>
   );
 }

@@ -71,10 +71,24 @@ const jsonLd = {
   })),
 };
 
+const breadcrumbJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  itemListElement: [
+    { "@type": "ListItem", position: 1, name: "首頁", item: "https://evpro-eye.com" },
+    { "@type": "ListItem", position: 2, name: "FAQ", item: "https://evpro-eye.com/faq" },
+  ],
+};
+
 export default function FaqPage() {
   return (
     <>
-      {/* JSON-LD */}
+      {/* BreadcrumbList JSON-LD */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
+      />
+      {/* FAQPage JSON-LD */}
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
