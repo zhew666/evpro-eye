@@ -30,6 +30,11 @@ interface ListResponse {
   dg_tables: number;
 }
 
+interface EvSnapshot {
+  ev_banker: string; ev_player: string; ev_tie: string;
+  ev_super6: string; ev_pair_p: string; ev_pair_b: string;
+}
+
 interface HistoryHand {
   hand_num: number;
   p1: string; p2: string; p3: string;
@@ -112,6 +117,10 @@ export default function LiveDataClient() {
   const [countdown, setCountdown] = useState(10);
   const tabScrollRef = useRef<HTMLDivElement>(null);
 
+  // Accumulate EV snapshots per hand (keyed by "tableId:shoe:hand_num")
+  const evCacheRef = useRef<Record<string, EvSnapshot>>({});
+  const lastSeenRef = useRef<{ tableId: string; shoe: number; handNum: number }>({ tableId: "", shoe: 0, handNum: 0 });
+
   // Fetch table list
   const fetchList = useCallback(async () => {
     try {
@@ -129,7 +138,7 @@ export default function LiveDataClient() {
     }
   }, []);
 
-  // Fetch single table detail
+  // Fetch single table detail + accumulate EV
   const fetchDetail = useCallback(async (tableId: string) => {
     if (!tableId) return;
     setDetailLoading(true);
@@ -138,6 +147,29 @@ export default function LiveDataClient() {
       if (!res.ok) throw new Error("Failed to fetch detail");
       const json: DetailResponse = await res.json();
       setDetail(json);
+
+      // Accumulate EV snapshot for current hand
+      const t = json.table;
+      if (t && t.hand_num > 0) {
+        const prev = lastSeenRef.current;
+        // Reset cache on table or shoe change
+        if (prev.tableId !== t.table_id || prev.shoe !== t.shoe) {
+          evCacheRef.current = {};
+        }
+        lastSeenRef.current = { tableId: t.table_id, shoe: t.shoe, handNum: t.hand_num };
+
+        const key = `${t.table_id}:${t.shoe}:${t.hand_num}`;
+        if (!evCacheRef.current[key]) {
+          evCacheRef.current[key] = {
+            ev_banker: t.ev_banker,
+            ev_player: t.ev_player,
+            ev_tie: t.ev_tie,
+            ev_super6: t.ev_super6,
+            ev_pair_p: t.ev_pair_p,
+            ev_pair_b: t.ev_pair_b,
+          };
+        }
+      }
     } catch {
       setDetail(null);
     } finally {
@@ -197,6 +229,8 @@ export default function LiveDataClient() {
   // Switch table
   const handleTableChange = useCallback(async (tableId: string) => {
     setSelectedTable(tableId);
+    evCacheRef.current = {};
+    lastSeenRef.current = { tableId: "", shoe: 0, handNum: 0 };
     await fetchDetail(tableId);
   }, [fetchDetail]);
 
@@ -368,23 +402,39 @@ export default function LiveDataClient() {
                     const pCards = [hand.p1, hand.p2, hand.p3].filter((c) => c && c !== "" && c !== "-");
                     const bCards = [hand.b1, hand.b2, hand.b3].filter((c) => c && c !== "" && c !== "-");
 
+                    // Look up accumulated EV for this hand
+                    const evKey = `${detail.table.table_id}:${detail.table.shoe}:${hand.hand_num}`;
+                    const ev = evCacheRef.current[evKey];
+
                     return (
-                      <div key={hand.hand_num} className="flex items-center gap-3 px-4 py-2.5">
-                        <span className="text-xs text-text-muted w-8 shrink-0 font-mono">#{hand.hand_num}</span>
-                        <span className="text-sm">
-                          {pCards.map((c, i) => (
-                            <CardSpan key={`p${i}`} card={c} />
-                          ))}
-                        </span>
-                        <span className="text-text-muted text-xs mx-0.5">|</span>
-                        <span className="text-sm">
-                          {bCards.map((c, i) => (
-                            <CardSpan key={`b${i}`} card={c} />
-                          ))}
-                        </span>
-                        <span className="ml-auto">
-                          <ResultBadge result={result} />
-                        </span>
+                      <div key={hand.hand_num} className="px-4 py-2.5">
+                        <div className="flex items-center gap-3">
+                          <span className="text-xs text-text-muted w-8 shrink-0 font-mono">#{hand.hand_num}</span>
+                          <span className="text-sm">
+                            {pCards.map((c, i) => (
+                              <CardSpan key={`p${i}`} card={c} />
+                            ))}
+                          </span>
+                          <span className="text-text-muted text-xs mx-0.5">|</span>
+                          <span className="text-sm">
+                            {bCards.map((c, i) => (
+                              <CardSpan key={`b${i}`} card={c} />
+                            ))}
+                          </span>
+                          <span className="ml-auto">
+                            <ResultBadge result={result} />
+                          </span>
+                        </div>
+                        {ev && (
+                          <div className="flex gap-2 mt-1 ml-8 text-[10px] font-mono text-text-muted">
+                            <span>莊<span className={parseFloat(ev.ev_banker) > 0 ? "text-green-400" : ""}>{parseFloat(ev.ev_banker) > 0 ? "+" : ""}{(parseFloat(ev.ev_banker) * 100).toFixed(2)}%</span></span>
+                            <span>閒<span className={parseFloat(ev.ev_player) > 0 ? "text-green-400" : ""}>{parseFloat(ev.ev_player) > 0 ? "+" : ""}{(parseFloat(ev.ev_player) * 100).toFixed(2)}%</span></span>
+                            <span>和<span className={parseFloat(ev.ev_tie) > 0 ? "text-green-400" : ""}>{parseFloat(ev.ev_tie) > 0 ? "+" : ""}{(parseFloat(ev.ev_tie) * 100).toFixed(2)}%</span></span>
+                            <span>S6<span className={parseFloat(ev.ev_super6) > 0 ? "text-green-400" : ""}>{parseFloat(ev.ev_super6) > 0 ? "+" : ""}{(parseFloat(ev.ev_super6) * 100).toFixed(2)}%</span></span>
+                            <span>閒對<span className={parseFloat(ev.ev_pair_p) > 0 ? "text-green-400" : ""}>{parseFloat(ev.ev_pair_p) > 0 ? "+" : ""}{(parseFloat(ev.ev_pair_p) * 100).toFixed(2)}%</span></span>
+                            <span>莊對<span className={parseFloat(ev.ev_pair_b) > 0 ? "text-green-400" : ""}>{parseFloat(ev.ev_pair_b) > 0 ? "+" : ""}{(parseFloat(ev.ev_pair_b) * 100).toFixed(2)}%</span></span>
+                          </div>
+                        )}
                       </div>
                     );
                   })}

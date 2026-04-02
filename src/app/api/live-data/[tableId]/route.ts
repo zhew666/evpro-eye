@@ -97,7 +97,7 @@ export async function GET(
       };
     });
 
-    // Table info: always mask EV for latest hands
+    // Table info: return real EV values (masking handled by frontend)
     const tableData = {
       table_id: table.table_id,
       platform: table.platform,
@@ -110,12 +110,12 @@ export async function GET(
       b1: table.b1,
       b2: table.b2,
       b3: table.b3 || "",
-      ev_banker: MASK,
-      ev_player: MASK,
-      ev_tie: MASK,
-      ev_super6: MASK,
-      ev_pair_p: MASK,
-      ev_pair_b: MASK,
+      ev_banker: String(table.ev_banker ?? 0),
+      ev_player: String(table.ev_player ?? 0),
+      ev_tie: String(table.ev_tie ?? 0),
+      ev_super6: String(table.ev_super6 ?? 0),
+      ev_pair_p: String(table.ev_pair_p ?? 0),
+      ev_pair_b: String(table.ev_pair_b ?? 0),
       updated_at: table.updated_at,
     };
 
