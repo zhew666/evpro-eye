@@ -502,7 +502,7 @@ export default function LiveDataClient() {
       {/* Bottom CTA */}
       <div className="mt-8 text-center">
         <p className="text-text-muted text-sm mb-3">
-          數據每 10 秒更新 / EV 數據加入 LINE 即可查看（推薦碼：<code className="text-accent font-bold">LUCKY777</code>）
+          即時更新 / 完整 EV 數據加入 LINE 即可查看（推薦碼：<code className="text-accent font-bold">LUCKY777</code>）
         </p>
       </div>
     </div>
