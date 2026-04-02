@@ -131,8 +131,18 @@ export async function GET() {
     const mtCount = rows.filter(r => r.platform === "MT").length;
     const dgCount = rows.filter(r => r.platform === "DG").length;
 
+    // Group table IDs by platform
+    const tables_by_platform: Record<string, string[]> = {};
+    for (const row of rows) {
+      if (!tables_by_platform[row.platform]) {
+        tables_by_platform[row.platform] = [];
+      }
+      tables_by_platform[row.platform].push(row.table_id);
+    }
+
     return NextResponse.json({
       tables,
+      tables_by_platform,
       updated_at: new Date().toISOString(),
       total_tables: tables.length,
       mt_tables: mtCount,
