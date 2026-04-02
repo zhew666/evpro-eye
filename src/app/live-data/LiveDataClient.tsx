@@ -335,12 +335,26 @@ export default function LiveDataClient() {
       ) : (
         <div className="space-y-4">
           {/* Screenshot placeholder */}
-          <div className="relative w-full aspect-video bg-bg-card border border-white/5 rounded-xl flex items-center justify-center">
-            <div className="text-center text-text-muted">
-              <svg className="w-12 h-12 mx-auto mb-2 opacity-30" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
-              </svg>
-              <p className="text-sm">即時畫面開發中</p>
+          {/* Screenshot area */}
+          <div className="relative w-full aspect-video bg-bg-card border border-white/5 rounded-xl overflow-hidden">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={`/api/screenshot/${encodeURIComponent(selectedTable)}?t=${Date.now()}`}
+              alt={`${selectedTable} 即時畫面`}
+              className="w-full h-full object-cover"
+              onError={(e) => {
+                // 截圖不存在時顯示佔位
+                (e.target as HTMLImageElement).style.display = "none";
+                (e.target as HTMLImageElement).nextElementSibling?.classList.remove("hidden");
+              }}
+            />
+            <div className="hidden absolute inset-0 flex items-center justify-center text-text-muted">
+              <div className="text-center">
+                <svg className="w-12 h-12 mx-auto mb-2 opacity-30" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                </svg>
+                <p className="text-sm">即時畫面載入中</p>
+              </div>
             </div>
           </div>
 
