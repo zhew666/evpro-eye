@@ -51,9 +51,10 @@ export default function Header() {
             href="https://lin.ee/PGaRsrg"
             target="_blank"
             rel="noopener noreferrer"
-            className="hidden md:inline-flex items-center px-4 py-2 bg-accent text-primary text-sm font-bold rounded hover:bg-accent-hover transition-colors"
+            className="hidden md:inline-flex items-center gap-1.5 px-4 py-2 bg-accent text-primary text-sm font-bold rounded hover:bg-accent-hover transition-colors"
           >
             立即體驗
+            <span className="text-primary/70 font-mono text-xs">LUCKY777</span>
           </a>
 
           {/* Mobile menu */}

@@ -18,8 +18,8 @@ export default function Footer() {
           <div>
             <p className="text-accent font-bold text-lg mb-2">百家之眼</p>
             <p className="text-text-muted text-sm leading-relaxed">
-              以窮舉法即時計算百家樂期望值，用數學取代玄學。提供 LINE Bot
-              免費即時分析服務。
+              以窮舉法即時計算百家樂期望值，用數學取代玄學。透過 LINE Bot
+              提供即時分析服務。
             </p>
           </div>
 
@@ -50,6 +50,9 @@ export default function Footer() {
             >
               LINE 加好友
             </a>
+            <p className="text-text-muted text-xs mt-2">
+              推薦碼：<code className="text-accent font-bold">LUCKY777</code>
+            </p>
           </div>
         </div>
 

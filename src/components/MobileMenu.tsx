@@ -66,7 +66,7 @@ export default function MobileMenu() {
               onClick={() => setOpen(false)}
               className="my-3 py-2 px-4 bg-accent text-primary font-bold rounded text-center hover:bg-accent-hover transition-colors"
             >
-              立即體驗
+              立即體驗（推薦碼：LUCKY777）
             </a>
           </nav>
         </div>
