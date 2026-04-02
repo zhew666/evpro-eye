@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import LiveDataClient from "./LiveDataClient";
 
 export const metadata: Metadata = {
@@ -79,6 +80,58 @@ export default function LiveDataPage() {
       <section className="py-12 px-4">
         <div className="max-w-7xl mx-auto">
           <LiveDataClient />
+        </div>
+      </section>
+
+      {/* Related articles */}
+      <section className="py-12 px-4">
+        <div className="max-w-4xl mx-auto">
+          <h2 className="text-xl font-bold mb-6 text-center">
+            看不懂數據？<span className="text-accent">這些文章幫你</span>
+          </h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {[
+              {
+                title: "EV 期望值是什麼？怎麼看？",
+                desc: "用白話解釋 EV 在百家樂中的意義，教你怎麼判讀數據。",
+                href: "/blog/baccarat-ev-expected-value-explained",
+              },
+              {
+                title: "百家樂規則完整教學",
+                desc: "從點數計算到補牌規則，10 分鐘搞懂百家樂怎麼玩。",
+                href: "/blog/baccarat-rules-complete-guide",
+              },
+              {
+                title: "莊家優勢到底是什麼？",
+                desc: "為什麼莊注比閒注好？為什麼不要押和局？數學告訴你。",
+                href: "/blog/baccarat-house-edge-explained",
+              },
+              {
+                title: "百家樂算牌有用嗎？",
+                desc: "算牌的原理、限制與正確方法。窮舉法 vs 傳統計數法。",
+                href: "/blog/baccarat-card-counting-guide",
+              },
+              {
+                title: "怎麼用數據做下注決策？",
+                desc: "從直覺到數據驅動，學會用 EV 判斷什麼時候該出手。",
+                href: "/blog/baccarat-data-driven-approach",
+              },
+              {
+                title: "資金管理與凱利公式",
+                desc: "停損停利怎麼設？注碼怎麼分配？凱利公式實戰應用。",
+                href: "/blog/baccarat-bankroll-management",
+              },
+            ].map((article) => (
+              <Link
+                key={article.href}
+                href={article.href}
+                className="block p-4 bg-bg-card border border-white/5 rounded-xl hover:border-accent/30 transition-colors"
+              >
+                <h3 className="text-sm font-bold text-accent mb-1">{article.title}</h3>
+                <p className="text-xs text-text-muted leading-relaxed">{article.desc}</p>
+              </Link>
+            ))}
+          </div>
         </div>
       </section>
 
