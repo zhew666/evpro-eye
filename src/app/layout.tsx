@@ -54,6 +54,13 @@ export default function RootLayout({
   return (
     <html lang="zh-Hant-TW" className={`${notoSansTC.variable} antialiased`}>
       <head>
+        {/* Google Analytics */}
+        <script async src="https://www.googletagmanager.com/gtag/js?id=G-JTECMQ64XR" />
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date());gtag('config','G-JTECMQ64XR');`,
+          }}
+        />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
