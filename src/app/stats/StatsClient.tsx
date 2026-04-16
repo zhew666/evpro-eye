@@ -208,7 +208,7 @@ export default function StatsClient() {
                     <StatCard
                       label="對子提示次數"
                       value={fmtNum((ev.pair_p_signals ?? 0) + (ev.pair_b_signals ?? 0))}
-                      sub={`閒對 ${fmtNum(ev.pair_p_signals ?? 0)} / 莊對 ${fmtNum(ev.pair_b_signals ?? 0)}`}
+                      sub={`平均每天 ${((ev.pair_p_signals + ev.pair_b_signals) / periodDays).toFixed(1)} 次`}
                     />
                   </div>
 
@@ -217,12 +217,11 @@ export default function StatsClient() {
                     <p className="text-xs text-text-muted mb-3">推播注區分布</p>
                     <div className="space-y-2">
                       {[
-                        { label: "莊",   count: ev.by_bet.banker, color: "bg-accent" },
-                        { label: "閒",   count: ev.by_bet.player, color: "bg-blue-400" },
-                        { label: "S6",   count: ev.by_bet.super6, color: "bg-purple-400" },
-                        { label: "閒對", count: ev.by_bet.pair_p, color: "bg-pink-400" },
-                        { label: "莊對", count: ev.by_bet.pair_b, color: "bg-orange-400" },
-                        { label: "和",   count: ev.by_bet.tie,    color: "bg-green-400" },
+                        { label: "莊",  count: ev.by_bet.banker, color: "bg-accent" },
+                        { label: "閒",  count: ev.by_bet.player, color: "bg-blue-400" },
+                        { label: "S6",  count: ev.by_bet.super6, color: "bg-purple-400" },
+                        { label: "對子",count: ev.by_bet.pair_p + ev.by_bet.pair_b, color: "bg-pink-400" },
+                        { label: "和",  count: ev.by_bet.tie,    color: "bg-green-400" },
                       ].map((item) => (
                         <BetBar key={item.label} label={item.label}
                           count={item.count} total={ev.total} color={item.color} />
@@ -256,8 +255,13 @@ export default function StatsClient() {
                       ? `命中細節：20倍（兩張牌）${s6.hits_natural} 次 ／ 12倍（補牌）${s6.hits_draw} 次`
                       : undefined}
                   />
-                  <HitRow label="閒對子" stat={h.pair_p} />
-                  <HitRow label="莊對子" stat={h.pair_b} />
+                  <HitRow label="對子" stat={{
+                    signals: h.pair_p.signals + h.pair_b.signals,
+                    hits: h.pair_p.hits + h.pair_b.hits,
+                    rate: (h.pair_p.signals + h.pair_b.signals) > 0
+                      ? Math.round((h.pair_p.hits + h.pair_b.hits) / (h.pair_p.signals + h.pair_b.signals) * 10000) / 100
+                      : null,
+                  }} />
                   <HitRow label="和局" stat={h.tie} />
                   <p className="text-xs text-text-muted mt-4 pt-3 border-t border-white/5">
                     理論長期勝率：莊 45.86%、閒 44.62%、Super6 約 2.27%。
