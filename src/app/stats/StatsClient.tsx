@@ -288,23 +288,25 @@ export default function StatsClient() {
                 ? Math.round(pairHits / pairSignals * 10000) / 100
                 : null;
 
+              // 命中率區段：signals 用 hr.*.signals（有對應 hand_results 的推播數）
+              // 確保推播次數與命中次數來自同一時間區間
               const rows: { label: string; stat: HitStat; extra?: React.ReactNode }[] = [
                 {
                   label: "莊注",
                   stat: hr
-                    ? { signals: ev.banker_signals, hits: hr.banker.hits, rate: hr.banker.rate }
+                    ? { signals: hr.banker.signals, hits: hr.banker.hits, rate: hr.banker.rate }
                     : { signals: ev.banker_signals, hits: 0, rate: null },
                 },
                 {
                   label: "閒注",
                   stat: hr
-                    ? { signals: ev.player_signals, hits: hr.player.hits, rate: hr.player.rate }
+                    ? { signals: hr.player.signals, hits: hr.player.hits, rate: hr.player.rate }
                     : { signals: ev.player_signals, hits: 0, rate: null },
                 },
                 {
                   label: "Super6",
                   stat: hr
-                    ? { signals: ev.super6_signals, hits: (hr.super6 as Super6HitStat).hits, rate: hr.super6.rate }
+                    ? { signals: hr.super6.signals, hits: (hr.super6 as Super6HitStat).hits, rate: hr.super6.rate }
                     : { signals: ev.super6_signals, hits: 0, rate: null },
                   extra: hr && (hr.super6 as Super6HitStat).hits > 0
                     ? `命中細節：20倍（兩張牌）${(hr.super6 as Super6HitStat).hits_natural} 次 ／ 12倍（補牌）${(hr.super6 as Super6HitStat).hits_draw} 次`
@@ -312,7 +314,9 @@ export default function StatsClient() {
                 },
                 {
                   label: "對子",
-                  stat: { signals: pairSignals, hits: pairHits, rate: pairRate },
+                  stat: hr
+                    ? { signals: hr.pair_p.signals + hr.pair_b.signals, hits: pairHits, rate: pairRate }
+                    : { signals: pairSignals, hits: 0, rate: null },
                 },
               ];
 
