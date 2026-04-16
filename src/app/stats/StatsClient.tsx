@@ -40,18 +40,20 @@ function BetBar({ label, count, total, color }: {
       <div className="flex-1 bg-white/5 rounded-full h-2 overflow-hidden">
         <div className={`h-2 rounded-full ${color}`} style={{ width: `${pct.toFixed(1)}%` }} />
       </div>
-      <span className="text-xs text-text-muted w-24 text-right shrink-0">
+      <span className="text-xs text-text-muted w-28 text-right shrink-0">
         {fmtNum(count)} 場 ({pct.toFixed(2)}%)
       </span>
     </div>
   );
 }
 
-function HitRow({ label, stat, extra }: {
+/** 推播 + 命中率合併行 */
+function SignalRow({ label, stat, extra }: {
   label: string;
   stat: HitStat;
   extra?: React.ReactNode;
 }) {
+  const hasHit = stat.rate != null;
   const pct = stat.rate ?? 0;
   const barColor =
     pct >= 50 ? "bg-accent" :
@@ -60,24 +62,31 @@ function HitRow({ label, stat, extra }: {
 
   return (
     <div className="py-3 border-b border-white/5 last:border-0">
-      <div className="flex items-center justify-between mb-1.5">
+      <div className="flex items-center justify-between mb-2">
         <span className="text-sm font-medium text-text">{label}</span>
         <span className="text-sm text-text-muted">
-          推了 <span className="text-text font-bold">{fmtNum(stat.signals)}</span> 次，
-          中了 <span className="text-accent font-bold">{fmtNum(stat.hits)}</span> 次
+          推了 <span className="text-text font-bold">{fmtNum(stat.signals)}</span> 次
+          {hasHit && (
+            <>，中了 <span className="text-accent font-bold">{fmtNum(stat.hits)}</span> 次</>
+          )}
         </span>
       </div>
-      <div className="flex items-center gap-3">
-        <div className="flex-1 bg-white/5 rounded-full h-1.5 overflow-hidden">
-          <div className={`h-1.5 rounded-full ${barColor}`}
-            style={{ width: `${Math.min(pct, 100).toFixed(1)}%` }} />
+      {hasHit && (
+        <div className="flex items-center gap-3">
+          <div className="flex-1 bg-white/5 rounded-full h-1.5 overflow-hidden">
+            <div className={`h-1.5 rounded-full ${barColor}`}
+              style={{ width: `${Math.min(pct, 100).toFixed(1)}%` }} />
+          </div>
+          <span className={`text-xs font-bold w-14 text-right shrink-0 ${
+            pct >= 50 ? "text-accent" : pct >= 40 ? "text-yellow-400" : "text-text-muted"
+          }`}>
+            {pct.toFixed(1)}%
+          </span>
         </div>
-        <span className={`text-xs font-bold w-14 text-right shrink-0 ${
-          pct >= 50 ? "text-accent" : pct >= 40 ? "text-yellow-400" : "text-text-muted"
-        }`}>
-          {stat.rate != null ? stat.rate.toFixed(1) + "%" : "—"}
-        </span>
-      </div>
+      )}
+      {!hasHit && (
+        <p className="text-xs text-text-muted">命中率統計累積中</p>
+      )}
       {extra && <p className="text-xs text-text-muted mt-1">{extra}</p>}
     </div>
   );
@@ -103,42 +112,46 @@ function LoadingSkeleton() {
 /** 尚無真實數據時，顯示理論值作為參考 */
 function TheoryBanner() {
   return (
-    <div className="space-y-4">
-      <div className="bg-bg-card border border-white/5 rounded-xl p-5">
-        <p className="text-xs text-text-muted mb-3">
-          手牌數據累積中，以下為百家樂長期理論機率供參考
-        </p>
-        <div className="space-y-2">
-          {[
-            { label: "莊贏", pct: 45.86, color: "bg-accent" },
-            { label: "閒贏", pct: 44.62, color: "bg-blue-400" },
-            { label: "和局", pct: 9.52,  color: "bg-white/30" },
-          ].map((item) => (
-            <div key={item.label} className="flex items-center gap-3">
-              <span className="text-xs text-text-muted w-14 shrink-0">{item.label}</span>
-              <div className="flex-1 bg-white/5 rounded-full h-2 overflow-hidden">
-                <div className={`h-2 rounded-full ${item.color}`}
-                  style={{ width: `${item.pct}%` }} />
-              </div>
-              <span className="text-xs text-text-muted w-16 text-right shrink-0">
-                {item.pct}%
-              </span>
+    <div className="bg-bg-card border border-white/5 rounded-xl p-5">
+      <p className="text-xs text-text-muted mb-3">
+        手牌數據累積中，以下為百家樂長期理論機率供參考
+      </p>
+      <div className="space-y-2">
+        {[
+          { label: "莊贏", pct: 45.86, color: "bg-accent" },
+          { label: "閒贏", pct: 44.62, color: "bg-blue-400" },
+          { label: "和局", pct: 9.52,  color: "bg-white/30" },
+        ].map((item) => (
+          <div key={item.label} className="flex items-center gap-3">
+            <span className="text-xs text-text-muted w-14 shrink-0">{item.label}</span>
+            <div className="flex-1 bg-white/5 rounded-full h-2 overflow-hidden">
+              <div className={`h-2 rounded-full ${item.color}`}
+                style={{ width: `${item.pct}%` }} />
             </div>
-          ))}
-        </div>
-        <p className="text-xs text-accent mt-3">
-          * 莊的長期勝率比閒高 1.24%，這是系統推莊較多的數學原因。
-          實際統計數據累積後將自動替換此說明。
-        </p>
+            <span className="text-xs text-text-muted w-16 text-right shrink-0">
+              {item.pct}%
+            </span>
+          </div>
+        ))}
       </div>
+      <p className="text-xs text-accent mt-3">
+        * 莊的長期勝率比閒高 1.24%，這是系統推莊較多的數學原因。
+        實際統計數據累積後將自動替換此說明。
+      </p>
     </div>
   );
 }
 
 // ── 主元件 ──────────────────────────────────────────────────
 
+const PERIODS: { key: Period; label: string }[] = [
+  { key: "1d",  label: "今日" },
+  { key: "7d",  label: "近 7 天" },
+  { key: "30d", label: "近 30 天" },
+];
+
 export default function StatsClient() {
-  const [period, setPeriod] = useState<Period>("7d");
+  const [period, setPeriod] = useState<Period>("1d");
   const [data, setData] = useState<StatsResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -159,22 +172,22 @@ export default function StatsClient() {
 
   useEffect(() => { fetchStats(period); }, [period, fetchStats]);
 
-  const periodDays = period === "7d" ? 7 : 30;
-  const periodLabel = period === "7d" ? "近 7 天" : "近 30 天";
+  const periodLabel = PERIODS.find((p) => p.key === period)?.label ?? "";
+  const periodDays = period === "30d" ? 30 : period === "7d" ? 7 : 1;
 
   return (
     <div className="space-y-12">
       {/* Period toggle */}
       <div className="flex items-center gap-2">
         <span className="text-text-muted text-sm mr-2">統計區間</span>
-        {(["7d", "30d"] as Period[]).map((p) => (
-          <button key={p} onClick={() => setPeriod(p)}
+        {PERIODS.map((p) => (
+          <button key={p.key} onClick={() => setPeriod(p.key)}
             className={`px-4 py-1.5 rounded-full text-sm font-medium transition-colors ${
-              period === p
+              period === p.key
                 ? "bg-accent text-primary"
                 : "bg-bg-card text-text-muted hover:text-text border border-white/10"
             }`}>
-            {p === "7d" ? "近一週" : "近一個月"}
+            {p.label}
           </button>
         ))}
       </div>
@@ -188,12 +201,14 @@ export default function StatsClient() {
 
       {!loading && !error && data && (
         <>
-          {/* ── 區塊 1：牌局結果統計（最重要，放第一） ── */}
+          {/* ── 區塊一：牌局結果統計 ── */}
           <div>
             <SectionTitle>
               <span className="w-2 h-5 bg-accent rounded inline-block" />
               牌局結果統計
-              <span className="text-xs font-normal text-text-muted ml-1">（{periodLabel}，27 桌合計）</span>
+              <span className="text-xs font-normal text-text-muted ml-1">
+                （{periodLabel}，27 桌合計）
+              </span>
             </SectionTitle>
 
             {!data.has_hand_data ? (
@@ -205,9 +220,9 @@ export default function StatsClient() {
               const pairRate = hs.total_hands > 0 ? pairTotal / hs.total_hands : 0;
               return (
                 <div className="space-y-4">
-                  {/* 總覽卡片 */}
+                  {/* 數字卡片 */}
                   <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-                    <StatCard label="本期監測局數" value={fmtNum(hs.total_hands)} sub={periodLabel} />
+                    <StatCard label="監測局數" value={fmtNum(hs.total_hands)} sub={periodLabel} />
                     <StatCard label="莊贏" value={`${fmtNum(hs.banker_wins)} 場`} sub={fmtPct(rates.banker_rate)} accent />
                     <StatCard label="閒贏" value={`${fmtNum(hs.player_wins)} 場`} sub={fmtPct(rates.player_rate)} />
                     <StatCard label="和局" value={`${fmtNum(hs.ties)} 場`} sub={fmtPct(rates.tie_rate)} />
@@ -250,109 +265,105 @@ export default function StatsClient() {
             })()}
           </div>
 
-          {/* ── 區塊 2：系統推播活躍度 ── */}
+          {/* ── 區塊二：推播與命中（整合推播次數 + 命中率） ── */}
           <div>
             <SectionTitle>
               <span className="w-2 h-5 bg-purple-400 rounded inline-block" />
-              系統推播活躍度
-              <span className="text-xs font-normal text-text-muted ml-1">（{periodLabel}）</span>
+              推播與命中
+              <span className="text-xs font-normal text-text-muted ml-1">
+                （{periodLabel}，正EV推播次數及命中結果）
+              </span>
             </SectionTitle>
 
             {(() => {
               const ev = data.ev_signals;
-              const perDay = ev.total / periodDays;
+              const hr = data.ev_hit_rates;
+              const perDay = periodDays > 0 ? (ev.total / periodDays).toFixed(1) : "—";
+
+              // 把推播次數和命中率合併成一個物件給每個注區
+              const pairSignals = (ev.pair_p_signals ?? 0) + (ev.pair_b_signals ?? 0);
+              const pairHits = hr ? hr.pair_p.hits + hr.pair_b.hits : 0;
+              const pairRate = (hr && pairSignals > 0)
+                ? Math.round(pairHits / pairSignals * 10000) / 100
+                : null;
+
+              const rows: { label: string; stat: HitStat; extra?: React.ReactNode }[] = [
+                {
+                  label: "莊注",
+                  stat: hr
+                    ? { signals: ev.banker_signals, hits: hr.banker.hits, rate: hr.banker.rate }
+                    : { signals: ev.banker_signals, hits: 0, rate: null },
+                },
+                {
+                  label: "閒注",
+                  stat: hr
+                    ? { signals: ev.player_signals, hits: hr.player.hits, rate: hr.player.rate }
+                    : { signals: ev.player_signals, hits: 0, rate: null },
+                },
+                {
+                  label: "Super6",
+                  stat: hr
+                    ? { signals: ev.super6_signals, hits: (hr.super6 as Super6HitStat).hits, rate: hr.super6.rate }
+                    : { signals: ev.super6_signals, hits: 0, rate: null },
+                  extra: hr && (hr.super6 as Super6HitStat).hits > 0
+                    ? `命中細節：20倍（兩張牌）${(hr.super6 as Super6HitStat).hits_natural} 次 ／ 12倍（補牌）${(hr.super6 as Super6HitStat).hits_draw} 次`
+                    : undefined,
+                },
+                {
+                  label: "對子",
+                  stat: { signals: pairSignals, hits: pairHits, rate: pairRate },
+                },
+              ];
+
               return (
                 <div className="space-y-4">
+                  {/* 總覽卡片 */}
                   <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
                     <StatCard
                       label={`${periodLabel}推播總次數`}
                       value={fmtNum(ev.total)}
-                      sub="正EV訊號出現次數"
+                      sub="正EV訊號"
                       accent
                     />
                     <StatCard
-                      label="平均每天推播"
-                      value={`${perDay.toFixed(1)} 次`}
-                      sub="訊號出現頻率"
+                      label="平均每天"
+                      value={`${perDay} 次`}
+                      sub="推播頻率"
                     />
                     <StatCard
-                      label="Super6 提示次數"
-                      value={fmtNum(ev.super6_signals)}
-                      sub={`平均每天 ${(ev.super6_signals / periodDays).toFixed(1)} 次`}
-                    />
-                    <StatCard
-                      label="莊注提示次數"
-                      value={fmtNum(ev.banker_signals)}
-                      sub={`平均每天 ${(ev.banker_signals / periodDays).toFixed(1)} 次`}
-                    />
-                    <StatCard
-                      label="閒注提示次數"
-                      value={fmtNum(ev.player_signals)}
-                      sub={`平均每天 ${(ev.player_signals / periodDays).toFixed(1)} 次`}
-                    />
-                    <StatCard
-                      label="對子提示次數"
-                      value={fmtNum((ev.pair_p_signals ?? 0) + (ev.pair_b_signals ?? 0))}
-                      sub={`平均每天 ${(((ev.pair_p_signals ?? 0) + (ev.pair_b_signals ?? 0)) / periodDays).toFixed(1)} 次`}
+                      label="推播分布"
+                      value={`莊 ${fmtNum(ev.banker_signals)} ／ 閒 ${fmtNum(ev.player_signals)}`}
+                      sub={`Super6 ${fmtNum(ev.super6_signals)} ／ 對子 ${fmtNum(pairSignals)}`}
                     />
                   </div>
 
+                  {/* 推播分布長條圖 */}
                   <div className="bg-bg-card border border-white/5 rounded-xl p-5">
                     <p className="text-xs text-text-muted mb-3">推播注區分布</p>
                     <div className="space-y-2">
                       {[
-                        { label: "莊",  count: ev.by_bet.banker, color: "bg-accent" },
-                        { label: "閒",  count: ev.by_bet.player, color: "bg-blue-400" },
-                        { label: "S6",  count: ev.by_bet.super6, color: "bg-purple-400" },
+                        { label: "莊",   count: ev.by_bet.banker, color: "bg-accent" },
+                        { label: "閒",   count: ev.by_bet.player, color: "bg-blue-400" },
+                        { label: "S6",   count: ev.by_bet.super6, color: "bg-purple-400" },
                         { label: "對子", count: ev.by_bet.pair_p + ev.by_bet.pair_b, color: "bg-pink-400" },
-                        { label: "和",  count: ev.by_bet.tie,    color: "bg-green-400" },
+                        { label: "和",   count: ev.by_bet.tie,    color: "bg-green-400" },
                       ].map((item) => (
                         <BetBar key={item.label} label={item.label}
                           count={item.count} total={ev.total} color={item.color} />
                       ))}
                     </div>
                   </div>
-                </div>
-              );
-            })()}
-          </div>
 
-          {/* ── 區塊 3：提示命中率 ── */}
-          <div>
-            <SectionTitle>
-              <span className="w-2 h-5 bg-blue-400 rounded inline-block" />
-              提示命中率
-              <span className="text-xs font-normal text-text-muted ml-1">（{periodLabel}，系統提示後該局實際結果）</span>
-            </SectionTitle>
-
-            {!data.ev_hit_rates ? (
-              <div className="bg-bg-card border border-white/5 rounded-xl p-5 text-center">
-                <p className="text-text-muted text-sm">手牌數據累積中，有足夠數據後自動顯示。</p>
-              </div>
-            ) : (() => {
-              const h = data.ev_hit_rates!;
-              const s6 = h.super6 as Super6HitStat;
-              return (
-                <div className="bg-bg-card border border-white/5 rounded-xl p-5">
-                  <HitRow label="莊注" stat={h.banker} />
-                  <HitRow label="閒注" stat={h.player} />
-                  <HitRow label="Super6" stat={s6}
-                    extra={s6.hits > 0
-                      ? `命中細節：20倍（兩張牌）${s6.hits_natural} 次 ／ 12倍（補牌）${s6.hits_draw} 次`
-                      : undefined}
-                  />
-                  <HitRow label="對子" stat={{
-                    signals: h.pair_p.signals + h.pair_b.signals,
-                    hits: h.pair_p.hits + h.pair_b.hits,
-                    rate: (h.pair_p.signals + h.pair_b.signals) > 0
-                      ? Math.round((h.pair_p.hits + h.pair_b.hits) / (h.pair_p.signals + h.pair_b.signals) * 10000) / 100
-                      : null,
-                  }} />
-                  <HitRow label="和局" stat={h.tie} />
-                  <p className="text-xs text-text-muted mt-4 pt-3 border-t border-white/5">
-                    理論長期勝率：莊 45.86%、閒 44.62%、Super6 約 2.27%。
-                    系統只在 EV 高於理論值時推播，命中率應優於長期均值。
-                  </p>
+                  {/* 各注區命中率 */}
+                  <div className="bg-bg-card border border-white/5 rounded-xl p-5">
+                    <p className="text-xs text-text-muted mb-1">各注區命中率</p>
+                    <p className="text-xs text-text-muted mb-3 opacity-60">
+                      理論長期勝率：莊 45.86%、閒 44.62%、Super6 約 2.27%
+                    </p>
+                    {rows.map((r) => (
+                      <SignalRow key={r.label} label={r.label} stat={r.stat} extra={r.extra} />
+                    ))}
+                  </div>
                 </div>
               );
             })()}

@@ -93,10 +93,28 @@ export async function GET(request: NextRequest) {
   }
 
   const { searchParams } = new URL(request.url);
-  const periodDays = searchParams.get("period") === "30d" ? 30 : 7;
-  const since = new Date(
-    Date.now() - periodDays * 24 * 60 * 60 * 1000
-  ).toISOString();
+  const period = searchParams.get("period") ?? "7d";
+
+  let since: string;
+  let periodDays: number;
+
+  if (period === "1d") {
+    // 今日：台灣時間 00:00（UTC+8 → 前一天 16:00 UTC）
+    const now = new Date();
+    const twMidnight = new Date(
+      Date.UTC(
+        now.getUTCFullYear(),
+        now.getUTCMonth(),
+        now.getUTCDate() + (now.getUTCHours() >= 16 ? 0 : -1),
+        16, 0, 0, 0
+      )
+    );
+    since = twMidnight.toISOString();
+    periodDays = 1;
+  } else {
+    periodDays = period === "30d" ? 30 : 7;
+    since = new Date(Date.now() - periodDays * 24 * 60 * 60 * 1000).toISOString();
+  }
 
   try {
     let response: StatsResponse;
@@ -105,7 +123,7 @@ export async function GET(request: NextRequest) {
       // RPC 一次拿所有聚合數據（需 Migration 004+005）
       const rpc = await supabaseRpc("get_stats", { since_ts: since });
       response = {
-        period: `${periodDays}d`,
+        period,
         generated_at: new Date().toISOString(),
         ev_signals: rpc.ev_signals,
         hand_stats: rpc.hand_stats ?? null,
@@ -116,7 +134,7 @@ export async function GET(request: NextRequest) {
       // RPC 不存在 → fallback
       const ev_signals = await queryEvSignalsDirect(since);
       response = {
-        period: `${periodDays}d`,
+        period,
         generated_at: new Date().toISOString(),
         ev_signals,
         hand_stats: null,

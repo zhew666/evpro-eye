@@ -2,7 +2,7 @@
 // 百家之眼：歷史統計數據型別定義
 // ================================================================
 
-export type Period = "7d" | "30d";
+export type Period = "1d" | "7d" | "30d";
 
 /** EV 訊號統計（來源：positive_ev_log） */
 export interface EvSignalStats {
