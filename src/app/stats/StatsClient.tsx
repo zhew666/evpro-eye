@@ -110,9 +110,9 @@ function TheoryBanner() {
         </p>
         <div className="space-y-2">
           {[
-            { label: "莊贏", pct: 45.86, color: "bg-accent", note: "莊勝率略高，故系統推莊較多" },
-            { label: "閒贏", pct: 44.62, color: "bg-blue-400", note: "" },
-            { label: "和局", pct: 9.52,  color: "bg-white/30", note: "" },
+            { label: "莊贏", pct: 45.86, color: "bg-accent" },
+            { label: "閒贏", pct: 44.62, color: "bg-blue-400" },
+            { label: "和局", pct: 9.52,  color: "bg-white/30" },
           ].map((item) => (
             <div key={item.label} className="flex items-center gap-3">
               <span className="text-xs text-text-muted w-14 shrink-0">{item.label}</span>
@@ -120,12 +120,9 @@ function TheoryBanner() {
                 <div className={`h-2 rounded-full ${item.color}`}
                   style={{ width: `${item.pct}%` }} />
               </div>
-              <span className="text-xs text-text-muted w-24 text-right shrink-0">
+              <span className="text-xs text-text-muted w-16 text-right shrink-0">
                 {item.pct}%
               </span>
-              {item.note && (
-                <span className="text-xs text-accent hidden sm:inline">{item.note}</span>
-              )}
             </div>
           ))}
         </div>
