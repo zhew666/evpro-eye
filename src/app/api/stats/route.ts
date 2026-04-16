@@ -4,7 +4,7 @@ import type { StatsResponse, EvSignalStats } from "@/lib/stats";
 const SUPABASE_URL = process.env.SUPABASE_URL || "";
 const SUPABASE_ANON_KEY = process.env.SUPABASE_ANON_KEY || "";
 
-export const revalidate = 300;
+export const revalidate = 60;
 
 async function supabaseRpc(fn: string, body: Record<string, unknown>) {
   const res = await fetch(`${SUPABASE_URL}/rest/v1/rpc/${fn}`, {
@@ -145,7 +145,7 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json(response, {
       headers: {
-        "Cache-Control": "public, s-maxage=300, stale-while-revalidate=60",
+        "Cache-Control": "public, s-maxage=60, stale-while-revalidate=30",
       },
     });
   } catch (err) {
