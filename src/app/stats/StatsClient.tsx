@@ -242,7 +242,7 @@ export default function StatsClient() {
                   </div>
 
                   {/* 其他統計 */}
-                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+                  <div className="grid grid-cols-2 gap-4">
                     <StatCard
                       label="對子出現"
                       value={`${fmtNum(pairTotal)} 次`}
@@ -253,11 +253,6 @@ export default function StatsClient() {
                       value={`${fmtNum(hs.super6_count)} 次`}
                       sub={`自然20倍 ${fmtNum(hs.super6_natural_count)} ／ 補牌12倍 ${fmtNum(hs.super6_draw_count)}`}
                       accent
-                    />
-                    <StatCard
-                      label="自然牌"
-                      value={`${fmtNum(hs.natural_count)} 次`}
-                      sub={`出現率 ${fmtPct(rates.natural_rate)}`}
                     />
                   </div>
                 </div>
