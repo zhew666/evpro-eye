@@ -30,8 +30,8 @@ function SectionTitle({ children }: { children: React.ReactNode }) {
   );
 }
 
-function BetBar({ label, count, total, color }: {
-  label: string; count: number; total: number; color: string;
+function BetBar({ label, count, total, color, unit = "場" }: {
+  label: string; count: number; total: number; color: string; unit?: string;
 }) {
   const pct = total > 0 ? (count / total) * 100 : 0;
   return (
@@ -41,7 +41,7 @@ function BetBar({ label, count, total, color }: {
         <div className={`h-2 rounded-full ${color}`} style={{ width: `${pct.toFixed(1)}%` }} />
       </div>
       <span className="text-xs text-text-muted w-28 text-right shrink-0">
-        {fmtNum(count)} 場 ({pct.toFixed(2)}%)
+        {fmtNum(count)} {unit} ({pct.toFixed(2)}%)
       </span>
     </div>
   );
@@ -171,6 +171,12 @@ export default function StatsClient() {
   }, []);
 
   useEffect(() => { fetchStats(period); }, [period, fetchStats]);
+
+  // 每 60 秒自動刷新
+  useEffect(() => {
+    const timer = setInterval(() => fetchStats(period), 60_000);
+    return () => clearInterval(timer);
+  }, [period, fetchStats]);
 
   const periodLabel = PERIODS.find((p) => p.key === period)?.label ?? "";
   const periodDays = period === "30d" ? 30 : period === "7d" ? 7 : 1;
@@ -344,7 +350,7 @@ export default function StatsClient() {
                         { label: "和",   count: ev.by_bet.tie,    color: "bg-green-400" },
                       ].map((item) => (
                         <BetBar key={item.label} label={item.label}
-                          count={item.count} total={ev.total} color={item.color} />
+                          count={item.count} total={ev.total} color={item.color} unit="次" />
                       ))}
                     </div>
                   </div>

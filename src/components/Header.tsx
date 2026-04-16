@@ -7,6 +7,7 @@ const navItems = [
   { label: "EV教學", href: "/ev-guide" },
   { label: "功能介紹", href: "/features" },
   { label: "即時數據", href: "/live-data" },
+  { label: "歷史統計", href: "/stats" },
   { label: "部落格", href: "/blog" },
   { label: "FAQ", href: "/faq" },
 ];

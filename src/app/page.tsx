@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { getAllArticles } from "@/lib/articles";
+import HeroStats from "@/components/HeroStats";
 
 const features = [
   {
@@ -96,6 +97,7 @@ export default function Home() {
           <p className="mt-4 text-text-muted text-sm">
             加入後輸入推薦碼 <code className="text-accent font-bold">LUCKY777</code> 即可開始體驗
           </p>
+          <HeroStats />
         </div>
       </section>
 
