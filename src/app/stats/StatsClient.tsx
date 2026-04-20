@@ -257,7 +257,7 @@ export default function StatsClient() {
                     <StatCard
                       label="Super6 出現"
                       value={`${fmtNum(hs.super6_count)} 次`}
-                      sub={`自然20倍 ${fmtNum(hs.super6_natural_count)} ／ 補牌12倍 ${fmtNum(hs.super6_draw_count)}`}
+                      sub={`自然12倍 ${fmtNum(hs.super6_natural_count)} ／ 補牌20倍 ${fmtNum(hs.super6_draw_count)}`}
                       accent
                     />
                   </div>
@@ -281,11 +281,13 @@ export default function StatsClient() {
               const hr = data.ev_hit_rates;
               const perDay = periodDays > 0 ? (ev.total / periodDays).toFixed(1) : "—";
 
-              // 把推播次數和命中率合併成一個物件給每個注區
-              const pairSignals = (ev.pair_p_signals ?? 0) + (ev.pair_b_signals ?? 0);
-              const pairHits = hr ? hr.pair_p.hits + hr.pair_b.hits : 0;
-              const pairRate = (hr && pairSignals > 0)
-                ? Math.round(pairHits / pairSignals * 10000) / 100
+              // 對子：pair_p 和 pair_b 同一手同時計算，取 max 避免雙重計算
+              // 完整去重需靠 SQL pair_signals 欄位（待 006 migration）
+              const pairSignals = Math.max(ev.pair_p_signals ?? 0, ev.pair_b_signals ?? 0);
+              const pairHits = hr ? Math.max(hr.pair_p.hits, hr.pair_b.hits) : 0;
+              const pairHrSignals = hr ? Math.max(hr.pair_p.signals, hr.pair_b.signals) : 0;
+              const pairRate = (pairHrSignals > 0)
+                ? Math.round(pairHits / pairHrSignals * 10000) / 100
                 : null;
 
               // 命中率區段：signals 用 hr.*.signals（有對應 hand_results 的推播數）
@@ -309,13 +311,13 @@ export default function StatsClient() {
                     ? { signals: hr.super6.signals, hits: (hr.super6 as Super6HitStat).hits, rate: hr.super6.rate }
                     : { signals: ev.super6_signals, hits: 0, rate: null },
                   extra: hr && (hr.super6 as Super6HitStat).hits > 0
-                    ? `命中細節：20倍（兩張牌）${(hr.super6 as Super6HitStat).hits_natural} 次 ／ 12倍（補牌）${(hr.super6 as Super6HitStat).hits_draw} 次`
+                    ? `命中細節：12倍（兩張牌）${(hr.super6 as Super6HitStat).hits_natural} 次 ／ 20倍（補牌）${(hr.super6 as Super6HitStat).hits_draw} 次`
                     : undefined,
                 },
                 {
                   label: "對子",
                   stat: hr
-                    ? { signals: hr.pair_p.signals + hr.pair_b.signals, hits: pairHits, rate: pairRate }
+                    ? { signals: pairHrSignals, hits: pairHits, rate: pairRate }
                     : { signals: pairSignals, hits: 0, rate: null },
                 },
               ];
@@ -363,7 +365,8 @@ export default function StatsClient() {
                   <div className="bg-bg-card border border-white/5 rounded-xl p-5">
                     <p className="text-xs text-text-muted mb-1">各注區命中率</p>
                     <p className="text-xs text-text-muted mb-3 opacity-60">
-                      理論長期勝率：莊 45.86%、閒 44.62%、Super6 約 2.27%
+                      理論長期勝率：莊 45.86%、閒 44.62%、Super6 約 2.27%。
+                      莊／閒命中率不計和局（和局視為退注）。
                     </p>
                     {rows.map((r) => (
                       <SignalRow key={r.label} label={r.label} stat={r.stat} extra={r.extra} />
