@@ -172,11 +172,11 @@ export default function StatsClient() {
 
   useEffect(() => { fetchStats(period); }, [period, fetchStats]);
 
-  // 每 60 秒自動刷新（暫停中，待恢復）
-  // useEffect(() => {
-  //   const timer = setInterval(() => fetchStats(period), 60_000);
-  //   return () => clearInterval(timer);
-  // }, [period, fetchStats]);
+  // 每 60 秒自動刷新
+  useEffect(() => {
+    const timer = setInterval(() => fetchStats(period), 60_000);
+    return () => clearInterval(timer);
+  }, [period, fetchStats]);
 
   const periodLabel = PERIODS.find((p) => p.key === period)?.label ?? "";
   const periodDays = period === "30d" ? 30 : period === "7d" ? 7 : 1;
