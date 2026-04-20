@@ -129,6 +129,7 @@ export async function GET(request: NextRequest) {
         hand_stats: rpc.hand_stats ?? null,
         ev_hit_rates: rpc.ev_hit_rates ?? null,
         has_hand_data: rpc.has_hand_data ?? false,
+        hand_data_start: rpc.hand_data_start ?? null,
       };
     } catch {
       // RPC 不存在 → fallback

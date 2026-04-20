@@ -377,8 +377,19 @@ export default function StatsClient() {
             })()}
           </div>
 
+          {data.hand_data_start && (
+            <p className="text-xs text-text-muted">
+              * 牌局與命中率統計自{" "}
+              <span className="text-accent">
+                {new Date(data.hand_data_start).toLocaleDateString("zh-TW")}
+              </span>{" "}
+              起累積。完整 7 天 / 30 天數據將於資料累積足夠後呈現，
+              推播次數為 positive_ev_log 完整歷史。
+            </p>
+          )}
+
           <p className="text-xs text-text-muted text-right">
-            更新時間：{new Date(data.generated_at).toLocaleString("zh-TW")}（每 5 分鐘刷新）
+            更新時間：{new Date(data.generated_at).toLocaleString("zh-TW")}（每分鐘刷新）
           </p>
         </>
       )}

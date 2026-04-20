@@ -77,6 +77,8 @@ export interface StatsResponse {
   hand_stats: HandStats | null;
   ev_hit_rates: EvHitRates | null;
   has_hand_data: boolean;
+  /** 牌局資料的起始時間（ISO string），null 表示尚未有資料 */
+  hand_data_start?: string | null;
   error?: string;
 }
 
