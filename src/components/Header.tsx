@@ -1,6 +1,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import MobileMenu from "./MobileMenu";
+import { cn } from "@/lib/cn";
 
 const navItems = [
   { label: "首頁", href: "/" },
@@ -9,6 +10,7 @@ const navItems = [
   { label: "即時數據", href: "/live-data" },
   { label: "近期戰報", href: "/stats" },
   { label: "歷史牌局", href: "/hands" },
+  { label: "挑戰題庫", href: "/quiz" },
   { label: "部落格", href: "/blog" },
   { label: "FAQ", href: "/faq" },
 ];
@@ -53,7 +55,15 @@ export default function Header() {
             href="https://lin.ee/PGaRsrg"
             target="_blank"
             rel="noopener noreferrer"
-            className="hidden md:inline-flex items-center gap-1.5 px-4 py-2 bg-accent text-primary text-sm font-bold rounded hover:bg-accent-hover transition-colors"
+            className={cn(
+              "hidden md:inline-flex items-center justify-center gap-1.5 font-bold",
+              "transition-colors duration-[var(--duration-base)] ease-[var(--ease-out)]",
+              "px-4 py-2 text-sm rounded-lg",
+              "bg-accent text-primary hover:bg-accent-hover shadow-[var(--shadow-1)]",
+              "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent",
+              "focus-visible:ring-offset-2 focus-visible:ring-offset-[color:var(--color-bg)]",
+              "active:translate-y-px"
+            )}
           >
             立即體驗
             <span className="text-primary/70 font-mono text-xs">LUCKY777</span>

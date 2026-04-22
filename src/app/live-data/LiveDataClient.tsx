@@ -2,6 +2,9 @@
 
 import { useState, useEffect, useCallback, useRef, useMemo } from "react";
 import { RoadsPanel, type ApiHand as RoadApiHand } from "@/components/BaccaratRoads";
+import { Card, Button, Badge, Tabs } from "@/components/ui";
+import type { TabItem } from "@/components/ui";
+import { cn } from "@/lib/cn";
 
 /* ─── Types ────────────────────────────────────────── */
 
@@ -68,6 +71,8 @@ interface ShoeResponse {
 
 const PLATFORMS = ["MT", "DG"] as const;
 
+const platformTabs: TabItem<string>[] = PLATFORMS.map((p) => ({ key: p, label: p }));
+
 function cardPoint(card: string | null | undefined): number {
   if (!card || card === "****" || card === "" || card === "-") return 0;
   const rank = card.replace(/[^\dTJQKA]/g, "");
@@ -100,12 +105,17 @@ function CardSpan({ card }: { card: string }) {
 }
 
 function ResultBadge({ result }: { result: string }) {
-  const colorMap: Record<string, string> = {
-    "莊贏": "text-red-400",
-    "閒贏": "text-blue-400",
-    "和局": "text-green-400",
+  const toneMap: Record<string, "game-banker" | "game-player" | "game-tie" | "neutral"> = {
+    "莊贏": "game-banker",
+    "閒贏": "game-player",
+    "和局": "game-tie",
   };
-  return <span className={`text-xs font-bold ${colorMap[result] || "text-text-muted"}`}>{result}</span>;
+  const tone = toneMap[result] ?? "neutral";
+  return (
+    <Badge tone={tone} variant="dot" size="sm">
+      {result}
+    </Badge>
+  );
 }
 
 /* ─── Main Component ───────────────────────────────── */
@@ -251,13 +261,10 @@ export default function LiveDataClient() {
   if (error && !listData) {
     return (
       <div className="text-center py-20">
-        <p className="text-red-400 mb-4">{error}</p>
-        <button
-          onClick={fetchList}
-          className="px-4 py-2 bg-accent text-primary rounded font-bold hover:bg-accent-hover transition-colors"
-        >
+        <p className="text-[color:var(--color-error)] mb-4">{error}</p>
+        <Button variant="primary" onClick={fetchList}>
           重試
-        </button>
+        </Button>
       </div>
     );
   }
@@ -284,41 +291,49 @@ export default function LiveDataClient() {
       </div>
 
       {/* Platform tabs */}
-      <div className="flex gap-2 mb-3">
-        {PLATFORMS.map((p) => (
-          <button
-            key={p}
-            onClick={() => handlePlatformChange(p)}
-            className={`px-5 py-2 rounded-lg text-sm font-bold transition-colors ${
-              platform === p
-                ? "bg-accent text-primary"
-                : "bg-white/5 text-text-muted hover:bg-white/10"
-            }`}
-          >
-            {p}
-          </button>
-        ))}
+      <div className="mb-3">
+        <Tabs
+          items={platformTabs}
+          value={platform}
+          onChange={handlePlatformChange}
+          variant="pill"
+          size="md"
+          ariaLabel="平台切換"
+        />
       </div>
 
-      {/* Table tabs - horizontal scroll */}
+      {/* Table tabs - horizontal scroll (preserve custom scroll behavior) */}
       <div
         ref={tabScrollRef}
         className="flex gap-1.5 mb-5 overflow-x-auto pb-2 scrollbar-hide"
         style={{ WebkitOverflowScrolling: "touch" }}
+        role="tablist"
+        aria-label="桌台切換"
       >
-        {currentTables.map((tid) => (
-          <button
-            key={tid}
-            onClick={() => handleTableChange(tid)}
-            className={`shrink-0 px-3 py-1.5 rounded text-xs font-mono font-bold transition-colors ${
-              selectedTable === tid
-                ? "bg-accent text-primary"
-                : "bg-white/5 text-text-muted hover:bg-white/10"
-            }`}
-          >
-            {tid}
-          </button>
-        ))}
+        {currentTables.map((tid) => {
+          const selected = selectedTable === tid;
+          return (
+            <button
+              key={tid}
+              type="button"
+              role="tab"
+              aria-selected={selected}
+              onClick={() => handleTableChange(tid)}
+              className={cn(
+                "shrink-0 inline-flex items-center justify-center font-bold font-mono",
+                "transition-colors duration-[var(--duration-base)] ease-[var(--ease-out)]",
+                "px-3 py-1.5 text-xs rounded-md",
+                "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent",
+                "focus-visible:ring-offset-2 focus-visible:ring-offset-[color:var(--color-bg)]",
+                selected
+                  ? "bg-accent text-primary"
+                  : "bg-[color:var(--color-surface-1)] text-text-muted hover:bg-[color:var(--color-surface-2)] hover:text-text"
+              )}
+            >
+              {tid}
+            </button>
+          );
+        })}
         {currentTables.length === 0 && (
           <span className="text-text-muted text-sm py-1">此平台暫無桌局</span>
         )}
@@ -335,17 +350,17 @@ export default function LiveDataClient() {
         <div className="space-y-4">
           {/* Screenshot placeholder */}
           {/* Screenshot area */}
-          <div className="relative w-full bg-bg-card border border-white/5 rounded-xl overflow-hidden">
+          <Card className="relative w-full p-0 overflow-hidden">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src="/mt-live-banner.png"
               alt="MT 真人百家樂"
               className="w-full h-auto object-cover"
             />
-          </div>
+          </Card>
 
           {/* Table info bar */}
-          <div className="flex flex-wrap items-center gap-x-4 gap-y-1 px-1 text-sm">
+          <Card variant="compact" className="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm">
             <span className="text-text-muted">
               荷官：<span className="text-text font-medium">{t.dealer || "-"}</span>
             </span>
@@ -355,23 +370,23 @@ export default function LiveDataClient() {
             <span className="text-text-muted">
               手數：<span className="text-text font-medium">{t.hand_num}</span>
             </span>
-          </div>
+          </Card>
 
           {/* 五路面板（大路常駐、其餘展開） */}
-          <div className="bg-bg-card border border-white/5 rounded-xl p-3">
+          <Card className="p-3">
             <RoadsPanel hands={shoeHands} />
-          </div>
+          </Card>
 
           {/* Hand history */}
-          <div className="bg-bg-card border border-white/5 rounded-xl overflow-hidden">
-            <div className="px-4 py-2.5 border-b border-white/5 bg-primary/50">
+          <Card className="overflow-hidden p-0">
+            <div className="px-4 py-2.5 border-b border-[color:var(--color-border)] bg-primary/50">
               <h3 className="text-sm font-bold text-text">開牌記錄（當前靴）</h3>
             </div>
             <div className="max-h-[400px] overflow-y-auto">
               {sortedHistory.length === 0 ? (
                 <div className="text-center py-8 text-text-muted text-sm">暫無記錄</div>
               ) : (
-                <div className="divide-y divide-white/5">
+                <div className="divide-y divide-[color:var(--color-border)]">
                   {sortedHistory.map((hand) => {
                     if (hand.masked) {
                       return (
@@ -385,10 +400,10 @@ export default function LiveDataClient() {
                             </span>
                             <span className="text-text-muted text-xs mx-1">|</span>
                             <span className="text-sm font-mono text-text">
-                              <span className="text-red-400 mr-1">♥K</span>
+                              <span className="text-[color:var(--color-banker)] mr-1">♥K</span>
                               <span className="mr-1">♣3</span>
                             </span>
-                            <span className="ml-auto text-xs font-bold text-blue-400">閒贏</span>
+                            <span className="ml-auto text-xs font-bold text-[color:var(--color-player)]">閒贏</span>
                           </div>
                           {/* Overlay */}
                           <div className="absolute inset-0 flex items-center justify-center bg-bg-card/60 rounded">
@@ -448,7 +463,7 @@ export default function LiveDataClient() {
                               return (
                                 <span key={label}>
                                   {label}
-                                  <span className={val > 0 ? "text-green-400" : ""}>
+                                  <span className={val > 0 ? "text-[color:var(--color-success)]" : ""}>
                                     {val > 0 ? "+" : ""}{val.toFixed(4)}
                                   </span>
                                 </span>
@@ -462,11 +477,11 @@ export default function LiveDataClient() {
                 </div>
               )}
             </div>
-          </div>
+          </Card>
 
           {/* EV Panel */}
-          <div className="bg-bg-card border border-white/5 rounded-xl overflow-hidden">
-            <div className="px-4 py-2.5 border-b border-white/5 bg-primary/50">
+          <Card className="overflow-hidden p-0">
+            <div className="px-4 py-2.5 border-b border-[color:var(--color-border)] bg-primary/50">
               <h3 className="text-sm font-bold text-text">EV 面板</h3>
             </div>
             <div className="px-4 py-4">
@@ -495,7 +510,15 @@ export default function LiveDataClient() {
                   href="https://lin.ee/PGaRsrg"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 px-5 py-2.5 bg-accent text-primary font-bold text-sm rounded-lg hover:bg-accent-hover transition-colors"
+                  className={cn(
+                    "inline-flex items-center justify-center gap-1.5 font-bold",
+                    "transition-colors duration-[var(--duration-base)] ease-[var(--ease-out)]",
+                    "px-5 py-2.5 text-sm rounded-lg",
+                    "bg-accent text-primary hover:bg-accent-hover shadow-[var(--shadow-1)]",
+                    "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent",
+                    "focus-visible:ring-offset-2 focus-visible:ring-offset-[color:var(--color-bg)]",
+                    "active:translate-y-px"
+                  )}
                 >
                   加入 LINE 查看即時 EV
                 </a>
@@ -504,7 +527,7 @@ export default function LiveDataClient() {
                 </p>
               </div>
             </div>
-          </div>
+          </Card>
         </div>
       )}
 

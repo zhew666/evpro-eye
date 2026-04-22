@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { RoadsPanel, type ApiHand as RoadApiHand } from "@/components/BaccaratRoads";
+import { Card, Badge } from "@/components/ui";
 
 /* ─── 型別 ─── */
 
@@ -57,7 +58,7 @@ function isRedSuit(card: string): boolean {
 function CardSpan({ card }: { card: string | null | undefined }) {
   if (!card || card === "") return null;
   return (
-    <span className={`mr-1 font-mono ${isRedSuit(card) ? "text-red-400" : "text-text"}`}>
+    <span className={`mr-1 font-mono ${isRedSuit(card) ? "text-[color:var(--color-banker)]" : "text-text"}`}>
       {card}
     </span>
   );
@@ -65,25 +66,25 @@ function CardSpan({ card }: { card: string | null | undefined }) {
 
 function ResultBadge({ winner }: { winner: "banker" | "player" | "tie" }) {
   const map = {
-    banker: { label: "莊", cls: "text-red-400" },
-    player: { label: "閒", cls: "text-blue-400" },
-    tie: { label: "和", cls: "text-green-400" },
+    banker: { label: "莊", tone: "game-banker" as const },
+    player: { label: "閒", tone: "game-player" as const },
+    tie: { label: "和", tone: "game-tie" as const },
   };
-  const { label, cls } = map[winner];
-  return <span className={`text-xs font-bold ${cls}`}>{label}</span>;
+  const { label, tone } = map[winner];
+  return <Badge tone={tone} size="sm">{label}</Badge>;
 }
 
 function InfoCard({ label, value, sub, accent }: {
   label: string; value: string; sub?: string; accent?: boolean;
 }) {
   return (
-    <div className="bg-bg-card border border-white/5 rounded-xl p-3">
+    <Card variant="numeric" className="p-3">
       <div className="text-[10px] text-text-muted">{label}</div>
       <div className={`text-base font-bold ${accent ? "text-accent" : "text-text"}`}>
         {value}
       </div>
       {sub && <div className="text-[10px] text-text-muted">{sub}</div>}
-    </div>
+    </Card>
   );
 }
 
@@ -122,12 +123,12 @@ export default function ShoeDetailClient({ id }: { id: string }) {
 
   if (error || !data) {
     return (
-      <div className="bg-bg-card border border-red-500/20 rounded-xl p-8 text-center">
+      <Card className="text-center p-8 border-[color:var(--color-error)]/20">
         <p className="text-text-muted">{error || "資料不存在"}</p>
         <Link href="/hands" className="inline-block mt-4 text-accent text-sm hover:underline">
           ← 回到列表
         </Link>
-      </div>
+      </Card>
     );
   }
 
@@ -144,17 +145,15 @@ export default function ShoeDetailClient({ id }: { id: string }) {
       {/* 靴標題 */}
       <div>
         <div className="flex items-center gap-2 flex-wrap mb-2">
-          <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded ${
-            summary.platform === "MT" ? "bg-red-500/20 text-red-300" : "bg-blue-500/20 text-blue-300"
-          }`}>
+          <Badge tone={summary.platform === "MT" ? "warning" : "info"} size="sm">
             {summary.platform}
-          </span>
+          </Badge>
           <span className="font-mono text-lg font-bold text-text">{summary.table_id}</span>
           <span className="text-sm text-text-muted">靴 #{summary.shoe}</span>
           {!summary.is_complete && (
-            <span className="text-xs px-2 py-0.5 rounded bg-yellow-500/20 text-yellow-300">
+            <Badge tone="warning" size="md">
               進行中
-            </span>
+            </Badge>
           )}
         </div>
         <div className="text-xs text-text-muted">
@@ -192,7 +191,7 @@ export default function ShoeDetailClient({ id }: { id: string }) {
 
       {/* 牌路分析 */}
       {summary.total_hands >= 3 && (
-        <div className="bg-bg-card border border-white/5 rounded-xl p-3 text-xs">
+        <Card className="p-3 text-xs">
           <div className="flex flex-wrap gap-x-4 gap-y-1 text-text-muted">
             <span>最長連莊 <span className="text-text font-bold">{summary.longest_banker_streak}</span></span>
             <span>最長連閒 <span className="text-text font-bold">{summary.longest_player_streak}</span></span>
@@ -200,26 +199,26 @@ export default function ShoeDetailClient({ id }: { id: string }) {
             <span>大眼仔雙跳 <span className="text-text font-bold">{summary.big_eye_longest_alt}</span></span>
             <span>小路雙跳 <span className="text-text font-bold">{summary.small_road_longest_alt}</span></span>
             {summary.has_long_dragon && (
-              <span className="px-1.5 py-0.5 rounded bg-orange-500/20 text-orange-300 font-bold">
+              <Badge tone="warning" size="sm">
                 含長龍
-              </span>
+              </Badge>
             )}
           </div>
-        </div>
+        </Card>
       )}
 
       {/* 五路 */}
-      <div className="bg-bg-card border border-white/5 rounded-xl p-3">
+      <Card className="p-3">
         <RoadsPanel hands={hands} />
-      </div>
+      </Card>
 
       {/* 每手牌面 + EV */}
-      <div className="bg-bg-card border border-white/5 rounded-xl overflow-hidden">
-        <div className="px-4 py-2.5 border-b border-white/5 bg-primary/50 flex items-center justify-between">
+      <Card className="overflow-hidden p-0">
+        <div className="px-4 py-2.5 border-b border-[color:var(--color-border)] bg-primary/50 flex items-center justify-between">
           <h3 className="text-sm font-bold text-text">開牌記錄</h3>
           <span className="text-xs text-text-muted">新的在上</span>
         </div>
-        <div className="divide-y divide-white/5">
+        <div className="divide-y divide-[color:var(--color-border)]">
           {reversedHands.map((h) => {
             const pCards = [h.p1, h.p2, h.p3].filter((c) => c && c !== "");
             const bCards = [h.b1, h.b2, h.b3].filter((c) => c && c !== "");
@@ -241,13 +240,13 @@ export default function ShoeDetailClient({ id }: { id: string }) {
                   </span>
                   <ResultBadge winner={h.winner} />
                   {h.is_super6 && (
-                    <span className="text-[10px] text-yellow-400 font-bold">S6</span>
+                    <Badge tone="game-super6" size="sm">S6</Badge>
                   )}
                   {h.is_pair_b && (
-                    <span className="text-[10px] text-red-400">莊對</span>
+                    <Badge tone="game-banker" size="sm">莊對</Badge>
                   )}
                   {h.is_pair_p && (
-                    <span className="text-[10px] text-blue-400">閒對</span>
+                    <Badge tone="game-player" size="sm">閒對</Badge>
                   )}
                 </div>
                 {hasEv && (
@@ -264,7 +263,7 @@ export default function ShoeDetailClient({ id }: { id: string }) {
                       return (
                         <span key={label}>
                           {label}
-                          <span className={val > 0 ? "text-green-400" : ""}>
+                          <span className={val > 0 ? "text-[color:var(--color-success)]" : ""}>
                             {val > 0 ? "+" : ""}{val.toFixed(4)}
                           </span>
                         </span>
@@ -276,7 +275,7 @@ export default function ShoeDetailClient({ id }: { id: string }) {
             );
           })}
         </div>
-      </div>
+      </Card>
     </div>
   );
 }

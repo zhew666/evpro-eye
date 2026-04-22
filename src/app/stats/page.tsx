@@ -1,5 +1,16 @@
 import type { Metadata } from "next";
 import StatsClient from "./StatsClient";
+import { cn } from "@/lib/cn";
+
+const heroPrimaryCta = cn(
+  "inline-flex items-center justify-center gap-1.5 font-bold",
+  "transition-colors duration-[var(--duration-base)] ease-[var(--ease-out)]",
+  "px-8 py-4 text-lg rounded-lg",
+  "bg-accent text-primary hover:bg-accent-hover shadow-lg shadow-accent/20",
+  "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent",
+  "focus-visible:ring-offset-2 focus-visible:ring-offset-[color:var(--color-bg)]",
+  "active:translate-y-px"
+);
 
 export const metadata: Metadata = {
   title: "歷史統計數據 — 莊閒勝率、Super6 命中、EV 訊號分析",
@@ -110,7 +121,7 @@ export default function StatsPage() {
             href="https://lin.ee/PGaRsrg"
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center px-8 py-4 bg-accent text-primary font-bold text-lg rounded-lg hover:bg-accent-hover transition-colors shadow-lg shadow-accent/20"
+            className={heroPrimaryCta}
           >
             加入 LINE
           </a>

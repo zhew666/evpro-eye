@@ -3,6 +3,16 @@
 import { useState, useEffect, useCallback } from "react";
 import type { StatsResponse, Period, HitStat, Super6HitStat, EvHitRates } from "@/lib/stats";
 import { deriveHandRates, fmtPct, fmtNum } from "@/lib/stats";
+import {
+  Card,
+  Tabs,
+  ScopeBanner,
+  TheoryBar,
+  DialChart,
+  BreakevenGauge,
+  FlowCard,
+} from "@/components/ui";
+import type { TabItem, FlowStep } from "@/components/ui";
 
 // ── 盈虧試算 ─────────────────────────────────────────────────
 // 每注 main（莊閒）/ side（S6+對子）
@@ -58,19 +68,20 @@ function fmtMoney(n: number): string {
 
 // ── 小工具元件 ──────────────────────────────────────────────
 
+/** 三段式數據卡片（label / value / sub）— 透過新 Card primitive 實作 */
 function StatCard({
   label, value, sub, accent,
 }: {
   label: string; value: string; sub?: string; accent?: boolean;
 }) {
   return (
-    <div className="bg-bg-card border border-white/5 rounded-xl p-5 flex flex-col gap-1">
+    <Card variant="numeric">
       <p className="text-xs text-text-muted">{label}</p>
       <p className={`text-2xl font-bold ${accent ? "text-accent" : "text-text"}`}>
         {value}
       </p>
       {sub && <p className="text-xs text-text-muted">{sub}</p>}
-    </div>
+    </Card>
   );
 }
 
@@ -79,39 +90,6 @@ function SectionTitle({ children }: { children: React.ReactNode }) {
     <h2 className="text-lg font-bold text-text mb-4 flex items-center gap-2">
       {children}
     </h2>
-  );
-}
-
-/** 資料範圍標籤 —— 讓使用者分辨「全部牌局」vs「只有推播」 */
-function ScopeBanner({ variant, title, description }: {
-  variant: "all" | "push";
-  title: string;
-  description: string;
-}) {
-  const styles = variant === "all"
-    ? {
-        container: "bg-yellow-500/10 border-yellow-500/30",
-        label: "bg-yellow-500/20 text-yellow-300",
-        icon: "🔭",
-      }
-    : {
-        container: "bg-purple-500/10 border-purple-500/30",
-        label: "bg-purple-500/20 text-purple-300",
-        icon: "📡",
-      };
-  return (
-    <div className={`rounded-lg border px-3 py-2 mb-4 flex items-center gap-3 ${styles.container}`}>
-      <span className="text-lg shrink-0">{styles.icon}</span>
-      <div className="flex-1 min-w-0">
-        <div className="flex items-center gap-2 flex-wrap mb-0.5">
-          <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded ${styles.label}`}>
-            {variant === "all" ? "資料範圍：全部牌局" : "資料範圍：LINE 推播"}
-          </span>
-          <span className="text-sm font-bold text-text">{title}</span>
-        </div>
-        <p className="text-[11px] text-text-muted leading-snug">{description}</p>
-      </div>
-    </div>
   );
 }
 
@@ -245,6 +223,20 @@ function PnlSection({ hr, bet, periodLabel, rebatePct }: {
     },
   ];
 
+  // FlowCard steps：各注區 pnl 貢獻 + 反水
+  const flowSteps: FlowStep[] = [
+    { label: "莊注盈虧", value: b.pnl, tone: "banker" },
+    { label: "閒注盈虧", value: p.pnl, tone: "player" },
+    { label: "Super6 盈虧", value: s6.pnl, tone: "super6" },
+    { label: "對子盈虧", value: pair.pnl, tone: "pair" },
+    { label: "基礎合計", value: basePnl, tone: "neutral" },
+    {
+      label: `反水 ${rebatePct.toFixed(1)}%`,
+      value: rebateAmount,
+      tone: "accent",
+    },
+  ];
+
   return (
     <div className="space-y-4">
       {/* 總結卡片 */}
@@ -271,6 +263,18 @@ function PnlSection({ hr, bet, periodLabel, rebatePct }: {
           sub={`${fmtNum(totalSignals)} 次 / 流水 ${fmtNum(totalTurnover)}`}
         />
       </div>
+
+      {/* 盈虧組成（FlowCard）— 各注區貢獻 + 反水 → 淨盈虧 */}
+      <FlowCard
+        title="盈虧組成（各注區貢獻 ＋ 反水 ＝ 淨盈虧）"
+        steps={flowSteps}
+        total={{
+          label: "淨盈虧",
+          value: totalPnl,
+          accent: true,
+        }}
+        fmtValue={(n) => `${fmtMoney(n)} 元`}
+      />
 
       {/* 詳細表格 */}
       <div className="bg-bg-card border border-white/5 rounded-xl overflow-hidden">
@@ -303,9 +307,26 @@ function PnlSection({ hr, bet, periodLabel, rebatePct }: {
                       </span>
                     </td>
                     <td className="px-3 py-2.5 text-right text-text-muted">
-                      <div>{r.be.toFixed(2)}%</div>
-                      {"beNote" in r && r.beNote && (
-                        <div className="text-[10px] opacity-60">{r.beNote}</div>
+                      {r.rate != null ? (
+                        <div className="inline-flex flex-col items-end gap-1">
+                          <BreakevenGauge
+                            actual={r.rate}
+                            breakeven={r.be}
+                            width={110}
+                          />
+                          {"beNote" in r && r.beNote && (
+                            <div className="text-[10px] opacity-60 text-right">
+                              {r.beNote}
+                            </div>
+                          )}
+                        </div>
+                      ) : (
+                        <>
+                          <div>{r.be.toFixed(2)}%</div>
+                          {"beNote" in r && r.beNote && (
+                            <div className="text-[10px] opacity-60">{r.beNote}</div>
+                          )}
+                        </>
                       )}
                     </td>
                     <td className={`px-4 py-2.5 text-right font-mono font-bold ${
@@ -334,7 +355,7 @@ function PnlSection({ hr, bet, periodLabel, rebatePct }: {
       </div>
 
       {/* 說明 */}
-      <div className="bg-bg-card border border-white/5 rounded-xl p-4 text-xs text-text-muted leading-relaxed">
+      <Card className="text-xs text-text-muted leading-relaxed" variant="compact">
         <p className="mb-1">
           <span className="text-accent font-bold">損平點</span>：命中率要達多少才不賠錢。
           莊／閒注皆 50%、Super6 補牌（20倍）4.76%、自然（12倍）7.69%、對子（11倍）8.33%。
@@ -348,7 +369,7 @@ function PnlSection({ hr, bet, periodLabel, rebatePct }: {
           不論輸贏，會員可依總流水領回 {rebatePct.toFixed(1)}% 的現金反饋，
           常見範圍 0.4% ~ 1.2%（依會員等級、平台與代理制度而定）。
         </p>
-      </div>
+      </Card>
     </div>
   );
 }
@@ -373,7 +394,7 @@ function LoadingSkeleton() {
 /** 尚無真實數據時，顯示理論值作為參考 */
 function TheoryBanner() {
   return (
-    <div className="bg-bg-card border border-white/5 rounded-xl p-5">
+    <Card>
       <p className="text-xs text-text-muted mb-3">
         手牌數據累積中，以下為百家樂長期理論機率供參考
       </p>
@@ -399,7 +420,7 @@ function TheoryBanner() {
         * 莊的長期勝率比閒高 1.24%，這是系統推莊較多的數學原因。
         實際統計數據累積後將自動替換此說明。
       </p>
-    </div>
+    </Card>
   );
 }
 
@@ -410,6 +431,11 @@ const PERIODS: { key: Period; label: string }[] = [
   { key: "7d",  label: "近 7 天" },
   { key: "30d", label: "近 30 天" },
 ];
+
+const PERIOD_TABS: TabItem<Period>[] = PERIODS.map((p) => ({
+  key: p.key,
+  label: p.label,
+}));
 
 export default function StatsClient() {
   const [period, setPeriod] = useState<Period>("1d");
@@ -444,21 +470,25 @@ export default function StatsClient() {
   const periodLabel = PERIODS.find((p) => p.key === period)?.label ?? "";
   const periodDays = period === "30d" ? 30 : period === "7d" ? 7 : 1;
 
+  // 注額組合的 tab items（以字串 index 為 key）
+  const betSizeTabs: TabItem<string>[] = BET_SIZES.map((bs, i) => ({
+    key: String(i),
+    label: bs.label,
+  }));
+
   return (
     <div className="space-y-12">
       {/* Period toggle */}
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-2 flex-wrap">
         <span className="text-text-muted text-sm mr-2">統計區間</span>
-        {PERIODS.map((p) => (
-          <button key={p.key} onClick={() => setPeriod(p.key)}
-            className={`px-4 py-1.5 rounded-full text-sm font-medium transition-colors ${
-              period === p.key
-                ? "bg-accent text-primary"
-                : "bg-bg-card text-text-muted hover:text-text border border-white/10"
-            }`}>
-            {p.label}
-          </button>
-        ))}
+        <Tabs
+          items={PERIOD_TABS}
+          value={period}
+          onChange={setPeriod}
+          variant="pill"
+          size="md"
+          ariaLabel="統計區間"
+        />
       </div>
 
       {loading && <LoadingSkeleton />}
@@ -502,21 +532,46 @@ export default function StatsClient() {
                     <StatCard label="和局" value={`${fmtNum(hs.ties)} 場`} sub={fmtPct(rates.tie_rate)} />
                   </div>
 
-                  {/* 勝率長條圖 */}
-                  <div className="bg-bg-card border border-white/5 rounded-xl p-5">
-                    <p className="text-xs text-text-muted mb-3">勝負分布</p>
-                    <div className="space-y-2">
-                      <BetBar label="莊贏" count={hs.banker_wins} total={hs.total_hands} color="bg-accent" />
-                      <BetBar label="閒贏" count={hs.player_wins} total={hs.total_hands} color="bg-blue-400" />
-                      <BetBar label="和局" count={hs.ties}        total={hs.total_hands} color="bg-white/30" />
+                  {/* 勝率長條圖（Theory vs Actual）*/}
+                  <Card>
+                    <div className="flex items-baseline justify-between mb-3">
+                      <p className="text-xs text-text-muted">勝負分布（實際 vs 理論）</p>
+                      <p className="text-2xs text-text-dim">
+                        <span className="inline-block w-2 h-[2px] align-middle bg-accent mr-1" />
+                        金色豎線＝理論機率
+                      </p>
+                    </div>
+                    <div className="space-y-3">
+                      <TheoryBar
+                        label="莊贏"
+                        actual={rates.banker_rate * 100}
+                        theory={45.86}
+                        count={hs.banker_wins}
+                        total={hs.total_hands}
+                        tone="game-banker"
+                      />
+                      <TheoryBar
+                        label="閒贏"
+                        actual={rates.player_rate * 100}
+                        theory={44.62}
+                        count={hs.player_wins}
+                        total={hs.total_hands}
+                        tone="game-player"
+                      />
+                      <TheoryBar
+                        label="和局"
+                        actual={rates.tie_rate * 100}
+                        theory={9.52}
+                        count={hs.ties}
+                        total={hs.total_hands}
+                        tone="game-tie"
+                      />
                     </div>
                     <p className="text-xs text-text-muted mt-3 leading-relaxed">
-                      <span className="text-accent font-bold">長期理論機率</span>：
-                      莊 45.86% / 閒 44.62% / 和 9.52%。
-                      實際結果短期內會有 ±3% 波動，樣本達數千手後會逐漸收斂。
-                      <span className="text-accent">莊的長期勝率高於閒 1.24%</span>，這就是系統偏好推莊的數學原因。
+                      <span className="text-accent">莊的長期勝率高於閒 1.24%</span>，
+                      這就是系統偏好推莊的數學原因。
                     </p>
-                  </div>
+                  </Card>
 
                   {/* 其他統計 */}
                   <div className="grid grid-cols-2 gap-4">
@@ -623,7 +678,7 @@ export default function StatsClient() {
                   </div>
 
                   {/* 推播分布長條圖 */}
-                  <div className="bg-bg-card border border-white/5 rounded-xl p-5">
+                  <Card>
                     <p className="text-xs text-text-muted mb-3">推播注區分布</p>
                     <div className="space-y-2">
                       {[
@@ -637,19 +692,129 @@ export default function StatsClient() {
                           count={item.count} total={ev.total} color={item.color} unit="次" />
                       ))}
                     </div>
-                  </div>
+                  </Card>
 
-                  {/* 各注區命中率 */}
-                  <div className="bg-bg-card border border-white/5 rounded-xl p-5">
-                    <p className="text-xs text-text-muted mb-1">各注區命中率</p>
-                    <p className="text-xs text-text-muted mb-3 opacity-60">
-                      理論長期勝率：莊 45.86%、閒 44.62%、Super6 約 2.27%。
+                  {/* 各注區命中率（Dial 2x2 + 損平點 tick）*/}
+                  <Card>
+                    <div className="flex items-baseline justify-between mb-1 flex-wrap gap-x-3">
+                      <p className="text-xs text-text-muted">各注區命中率 vs 損平點</p>
+                      <p className="text-2xs text-text-dim">
+                        <span className="inline-block w-2 h-[2px] align-middle bg-accent mr-1" />
+                        金色 tick＝該注區損平點（要高於才賺）
+                      </p>
+                    </div>
+                    <p className="text-xs text-text-muted mb-5 opacity-60">
                       莊／閒命中率不計和局（和局視為退注）。
                     </p>
-                    {rows.map((r) => (
-                      <SignalRow key={r.label} label={r.label} stat={r.stat} extra={r.extra} />
-                    ))}
-                  </div>
+                    {(() => {
+                      // Dial 2×2 grid：莊、閒、S6、對子
+                      const s6Stat = hr?.super6 as Super6HitStat | undefined;
+                      const s6BE = (() => {
+                        if (!s6Stat) return (1 / 13) * 100;
+                        const totalHits = s6Stat.hits_natural + s6Stat.hits_draw;
+                        if (totalHits === 0) return (1 / 13) * 100;
+                        const avgPayout =
+                          (s6Stat.hits_natural * 12 + s6Stat.hits_draw * 20) /
+                          totalHits;
+                        return (1 / (avgPayout + 1)) * 100;
+                      })();
+
+                      // 以 breakeven 為中心對稱 → tick 永遠在儀表正中央
+                      const centered = (be: number, half: number) => ({
+                        min: Math.max(0, be - half),
+                        max: be + half,
+                      });
+
+                      const dials: {
+                        label: string;
+                        value: number | null;
+                        breakeven: number;
+                        tone: "game-banker" | "game-player" | "game-super6" | "game-pair";
+                        sublabel: string;
+                        min: number;
+                        max: number;
+                        extra?: React.ReactNode;
+                      }[] = [
+                        {
+                          label: "莊注",
+                          value: rows[0].stat.rate,
+                          breakeven: 50,
+                          tone: "game-banker",
+                          sublabel: `推 ${fmtNum(rows[0].stat.signals)} 中 ${fmtNum(rows[0].stat.hits)}`,
+                          ...centered(50, 10), // 40-60
+                        },
+                        {
+                          label: "閒注",
+                          value: rows[1].stat.rate,
+                          breakeven: 50,
+                          tone: "game-player",
+                          sublabel: `推 ${fmtNum(rows[1].stat.signals)} 中 ${fmtNum(rows[1].stat.hits)}`,
+                          ...centered(50, 10),
+                        },
+                        {
+                          label: "Super6",
+                          value: rows[2].stat.rate,
+                          breakeven: s6BE,
+                          tone: "game-super6",
+                          sublabel: `推 ${fmtNum(rows[2].stat.signals)} 中 ${fmtNum(rows[2].stat.hits)}`,
+                          ...centered(s6BE, 6),
+                          extra: s6Stat && s6Stat.hits > 0
+                            ? `12倍 ${s6Stat.hits_natural} 次 / 20倍 ${s6Stat.hits_draw} 次`
+                            : undefined,
+                        },
+                        {
+                          label: "對子",
+                          value: rows[3].stat.rate,
+                          breakeven: (1 / 12) * 100,
+                          tone: "game-pair",
+                          sublabel: `推 ${fmtNum(rows[3].stat.signals)} 中 ${fmtNum(rows[3].stat.hits)}`,
+                          ...centered((1 / 12) * 100, 8), // be=8.33 → 0.33-16.33
+                        },
+                      ];
+
+                      return (
+                        <div className="grid grid-cols-2 gap-6 py-2">
+                          {dials.map((d) => (
+                            <div
+                              key={d.label}
+                              className="flex flex-col items-center gap-1"
+                            >
+                              {d.value != null ? (
+                                <DialChart
+                                  label={d.label}
+                                  value={d.value}
+                                  breakeven={d.breakeven}
+                                  tone={d.tone}
+                                  sublabel={d.sublabel}
+                                  min={d.min}
+                                  max={d.max}
+                                />
+                              ) : (
+                                <div className="flex flex-col items-center gap-1 py-2">
+                                  <div className="w-[120px] h-[70px] flex items-end justify-center">
+                                    <span className="text-text-dim text-xs">
+                                      命中率累積中
+                                    </span>
+                                  </div>
+                                  <span className="text-sm font-medium text-text">
+                                    {d.label}
+                                  </span>
+                                  <span className="text-2xs text-text-dim">
+                                    {d.sublabel}
+                                  </span>
+                                </div>
+                              )}
+                              {d.extra && (
+                                <p className="text-2xs text-text-dim">
+                                  {d.extra}
+                                </p>
+                              )}
+                            </div>
+                          ))}
+                        </div>
+                      );
+                    })()}
+                  </Card>
                 </div>
               );
             })()}
@@ -675,16 +840,14 @@ export default function StatsClient() {
               {/* 注額切換 */}
               <div className="flex flex-wrap items-center gap-2 mb-3">
                 <span className="text-text-muted text-sm mr-1">注額組合</span>
-                {BET_SIZES.map((bs, i) => (
-                  <button key={bs.label} onClick={() => setBetIdx(i)}
-                    className={`px-3 py-1 rounded-full text-xs font-medium transition-colors ${
-                      betIdx === i
-                        ? "bg-accent text-primary"
-                        : "bg-bg-card text-text-muted hover:text-text border border-white/10"
-                    }`}>
-                    {bs.label}
-                  </button>
-                ))}
+                <Tabs
+                  items={betSizeTabs}
+                  value={String(betIdx)}
+                  onChange={(k) => setBetIdx(Number(k))}
+                  variant="pill"
+                  size="sm"
+                  ariaLabel="注額組合"
+                />
               </div>
 
               {/* 反水調整 */}

@@ -353,8 +353,15 @@ export function DerivedRoadSlash({
 
 /* ─── 五路面板（大路常駐、其餘展開） ──────── */
 
-export function RoadsPanel({ hands }: { hands: ApiHand[] }) {
-  const [expanded, setExpanded] = useState(false);
+export function RoadsPanel({
+  hands,
+  defaultExpanded = false,
+}: {
+  hands: ApiHand[];
+  /** 測驗頁需要一進來就看到下三路，設 true */
+  defaultExpanded?: boolean;
+}) {
+  const [expanded, setExpanded] = useState(defaultExpanded);
 
   if (hands.length === 0) {
     return (

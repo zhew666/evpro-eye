@@ -1,6 +1,18 @@
 import Link from "next/link";
 import { getAllArticles } from "@/lib/articles";
 import HeroStats from "@/components/HeroStats";
+import { Card, Badge } from "@/components/ui";
+import { cn } from "@/lib/cn";
+
+const primaryHeroCta = cn(
+  "inline-flex items-center justify-center gap-1.5 font-bold",
+  "transition-colors duration-[var(--duration-base)] ease-[var(--ease-out)]",
+  "px-8 py-4 text-lg rounded-lg",
+  "bg-accent text-primary hover:bg-accent-hover shadow-lg shadow-accent/20",
+  "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent",
+  "focus-visible:ring-offset-2 focus-visible:ring-offset-[color:var(--color-bg)]",
+  "active:translate-y-px"
+);
 
 const features = [
   {
@@ -90,7 +102,7 @@ export default function Home() {
             href="https://lin.ee/PGaRsrg"
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center px-8 py-4 bg-accent text-primary font-bold text-lg rounded-lg hover:bg-accent-hover transition-colors shadow-lg shadow-accent/20"
+            className={primaryHeroCta}
           >
             加入 LINE
           </a>
@@ -109,16 +121,16 @@ export default function Home() {
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {features.map((feat) => (
-              <div
+              <Card
                 key={feat.title}
-                className="bg-bg-card border border-white/5 rounded-xl p-8 hover:border-accent/30 transition-colors"
+                className="p-8 hover:border-accent/30 transition-colors"
               >
                 <div className="text-accent mb-4">{feat.icon}</div>
                 <h3 className="text-xl font-semibold mb-3">{feat.title}</h3>
                 <p className="text-text-muted text-sm leading-relaxed">
                   {feat.description}
                 </p>
-              </div>
+              </Card>
             ))}
           </div>
         </div>
@@ -154,7 +166,14 @@ export default function Home() {
           </p>
           <Link
             href="/live-data"
-            className="inline-flex items-center px-6 py-3 bg-bg-card border border-accent/30 text-accent font-bold rounded-lg hover:bg-primary-light transition-colors"
+            className={cn(
+              "inline-flex items-center justify-center gap-1.5 font-bold",
+              "transition-colors duration-[var(--duration-base)] ease-[var(--ease-out)]",
+              "px-6 py-3 text-base rounded-lg",
+              "bg-bg-card text-accent border border-accent/30 hover:bg-primary-light hover:border-accent/50",
+              "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent",
+              "focus-visible:ring-offset-2 focus-visible:ring-offset-[color:var(--color-bg)]"
+            )}
           >
             查看即時數據
             <svg
@@ -199,17 +218,22 @@ export default function Home() {
                 {pillar && (
                   <Link
                     href={`/blog/${pillar.slug}`}
-                    className="block bg-bg-card border border-accent/30 rounded-xl p-8 mb-8 hover:border-accent/50 transition-colors group"
+                    className="block group mb-8"
                   >
-                    <span className="inline-block px-3 py-1 bg-accent/20 text-accent text-xs font-bold rounded-full mb-3">
-                      完整指南
-                    </span>
-                    <h3 className="text-xl font-bold mb-2 group-hover:text-accent transition-colors">
-                      {pillar.title}
-                    </h3>
-                    <p className="text-text-muted text-sm leading-relaxed">
-                      {pillar.meta_description}
-                    </p>
+                    <Card
+                      variant="accent"
+                      className="p-8 hover:border-accent/50 transition-colors"
+                    >
+                      <Badge tone="brand" size="md" className="mb-3 rounded-full px-3 py-1">
+                        完整指南
+                      </Badge>
+                      <h3 className="text-xl font-bold mb-2 group-hover:text-accent transition-colors">
+                        {pillar.title}
+                      </h3>
+                      <p className="text-text-muted text-sm leading-relaxed">
+                        {pillar.meta_description}
+                      </p>
+                    </Card>
                   </Link>
                 )}
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -217,16 +241,20 @@ export default function Home() {
                     <Link
                       key={post.slug}
                       href={`/blog/${post.slug}`}
-                      className="block bg-bg-card border border-white/5 rounded-xl p-6 hover:border-accent/30 transition-colors group"
+                      className="block group"
                     >
-                      <h3 className="text-lg font-semibold mb-2 group-hover:text-accent transition-colors">
-                        {post.title}
-                      </h3>
-                      <p className="text-text-muted text-sm leading-relaxed">
-                        {post.meta_description.length > 80
-                          ? post.meta_description.slice(0, 80) + "..."
-                          : post.meta_description}
-                      </p>
+                      <Card
+                        className="p-6 hover:border-accent/30 transition-colors"
+                      >
+                        <h3 className="text-lg font-semibold mb-2 group-hover:text-accent transition-colors">
+                          {post.title}
+                        </h3>
+                        <p className="text-text-muted text-sm leading-relaxed">
+                          {post.meta_description.length > 80
+                            ? post.meta_description.slice(0, 80) + "..."
+                            : post.meta_description}
+                        </p>
+                      </Card>
                     </Link>
                   ))}
                 </div>
@@ -272,7 +300,7 @@ export default function Home() {
             href="https://lin.ee/PGaRsrg"
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center px-8 py-4 bg-accent text-primary font-bold text-lg rounded-lg hover:bg-accent-hover transition-colors shadow-lg shadow-accent/20"
+            className={primaryHeroCta}
           >
             加入 LINE 好友，立即體驗
           </a>

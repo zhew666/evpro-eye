@@ -1,5 +1,16 @@
 import type { Metadata } from "next";
 import HandsClient from "./HandsClient";
+import { cn } from "@/lib/cn";
+
+const heroPrimaryCta = cn(
+  "inline-flex items-center justify-center gap-1.5 font-bold",
+  "transition-colors duration-[var(--duration-base)] ease-[var(--ease-out)]",
+  "px-6 py-3 text-base rounded-lg",
+  "bg-accent text-primary hover:bg-accent-hover shadow-[var(--shadow-1)]",
+  "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent",
+  "focus-visible:ring-offset-2 focus-visible:ring-offset-[color:var(--color-bg)]",
+  "active:translate-y-px"
+);
 
 export const metadata: Metadata = {
   title: "歷史牌局查詢 — 每靴完整牌面與 EV",
@@ -78,7 +89,7 @@ export default function HandsPage() {
             href="https://lin.ee/PGaRsrg"
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center px-6 py-3 bg-accent text-primary font-bold rounded-lg hover:bg-accent-hover transition-colors"
+            className={heroPrimaryCta}
           >
             加入 LINE
           </a>
