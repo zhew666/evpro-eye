@@ -192,7 +192,7 @@ export default function ShoeDetailClient({ id }: { id: string }) {
       {/* 牌路分析 */}
       {summary.total_hands >= 3 && (
         <Card className="p-3 text-xs">
-          <div className="flex flex-wrap gap-x-4 gap-y-1 text-text-muted">
+          <div className="grid grid-cols-2 gap-x-3 gap-y-1 sm:flex sm:flex-wrap sm:gap-x-4 sm:gap-y-1 text-text-muted">
             <span>最長連莊 <span className="text-text font-bold">{summary.longest_banker_streak}</span></span>
             <span>最長連閒 <span className="text-text font-bold">{summary.longest_player_streak}</span></span>
             <span>龍 (≥4) <span className="text-text font-bold">莊{summary.banker_dragon_count} 閒{summary.player_dragon_count}</span></span>
@@ -224,8 +224,10 @@ export default function ShoeDetailClient({ id }: { id: string }) {
             const bCards = [h.b1, h.b2, h.b3].filter((c) => c && c !== "");
             const hasEv =
               h.ev_banker != null || h.ev_player != null || h.ev_tie != null;
+            const hasSideBadges = h.is_super6 || h.is_pair_b || h.is_pair_p;
             return (
               <div key={h.hand_num} className="px-4 py-2.5">
+                {/* 第一行：手號 + 牌面 + score + 主結果 */}
                 <div className="flex items-center gap-3 flex-wrap">
                   <span className="text-xs text-text-muted w-8 shrink-0 font-mono">#{h.hand_num}</span>
                   <span className="text-sm">
@@ -239,16 +241,25 @@ export default function ShoeDetailClient({ id }: { id: string }) {
                     {h.player_score} : {h.banker_score}
                   </span>
                   <ResultBadge winner={h.winner} />
+                  {/* sm+：副 badges 跟主結果同行（flex-wrap） */}
                   {h.is_super6 && (
-                    <Badge tone="game-super6" size="sm">S6</Badge>
+                    <Badge tone="game-super6" size="sm" className="hidden sm:inline-flex">S6</Badge>
                   )}
                   {h.is_pair_b && (
-                    <Badge tone="game-banker" size="sm">莊對</Badge>
+                    <Badge tone="game-banker" size="sm" className="hidden sm:inline-flex">莊對</Badge>
                   )}
                   {h.is_pair_p && (
-                    <Badge tone="game-player" size="sm">閒對</Badge>
+                    <Badge tone="game-player" size="sm" className="hidden sm:inline-flex">閒對</Badge>
                   )}
                 </div>
+                {/* 第二行（mobile only）：副 badges 獨立一行避免破碎 */}
+                {hasSideBadges && (
+                  <div className="flex items-center gap-2 mt-1 ml-8 sm:hidden">
+                    {h.is_super6 && <Badge tone="game-super6" size="sm">S6</Badge>}
+                    {h.is_pair_b && <Badge tone="game-banker" size="sm">莊對</Badge>}
+                    {h.is_pair_p && <Badge tone="game-player" size="sm">閒對</Badge>}
+                  </div>
+                )}
                 {hasEv && (
                   <div className="flex flex-wrap gap-x-2 gap-y-0.5 mt-1 ml-8 text-[10px] font-mono text-text-muted">
                     {[

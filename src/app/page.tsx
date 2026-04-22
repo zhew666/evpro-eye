@@ -88,13 +88,13 @@ export default function Home() {
   return (
     <>
       {/* Hero */}
-      <section className="relative bg-gradient-to-b from-bg via-primary to-bg py-24 sm:py-32 px-4">
+      <section className="relative bg-gradient-to-b from-bg via-primary to-bg py-16 sm:py-32 px-4">
         <div className="max-w-4xl mx-auto text-center">
-          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight mb-6">
+          <h1 className="text-3xl sm:text-5xl lg:text-6xl font-bold tracking-tight mb-6">
             用數學，
             <span className="text-accent">看穿每一手牌</span>
           </h1>
-          <p className="text-text-muted text-lg sm:text-xl max-w-2xl mx-auto mb-10 leading-relaxed">
+          <p className="text-text-muted text-base sm:text-xl max-w-2xl mx-auto mb-10 leading-relaxed">
             百家之眼以窮舉法即時計算百家樂期望值，告訴你每一手的真實
             EV。不預測、不帶單，只給你數學。
           </p>
@@ -114,7 +114,7 @@ export default function Home() {
       </section>
 
       {/* Features */}
-      <section className="py-20 px-4">
+      <section className="py-14 sm:py-20 px-4">
         <div className="max-w-6xl mx-auto">
           <h2 className="text-3xl font-bold text-center mb-12">
             為什麼選擇<span className="text-accent">百家之眼</span>？
@@ -123,7 +123,7 @@ export default function Home() {
             {features.map((feat) => (
               <Card
                 key={feat.title}
-                className="p-8 hover:border-accent/30 transition-colors"
+                className="p-6 sm:p-8 hover:border-accent/30 transition-colors"
               >
                 <div className="text-accent mb-4">{feat.icon}</div>
                 <h3 className="text-xl font-semibold mb-3">{feat.title}</h3>
@@ -137,7 +137,7 @@ export default function Home() {
       </section>
 
       {/* Stats */}
-      <section className="py-16 px-4 bg-primary/50">
+      <section className="py-12 sm:py-16 px-4 bg-primary/50">
         <div className="max-w-4xl mx-auto">
           <h2 className="text-2xl font-bold text-center mb-10">
             系統每日處理超過 1,000 手牌面數據
@@ -156,7 +156,7 @@ export default function Home() {
       </section>
 
       {/* Live Data Preview */}
-      <section className="py-20 px-4">
+      <section className="py-14 sm:py-20 px-4">
         <div className="max-w-6xl mx-auto text-center">
           <h2 className="text-3xl font-bold mb-4">
             即時<span className="text-accent">數據監控</span>
@@ -194,7 +194,7 @@ export default function Home() {
       </section>
 
       {/* Blog preview — dynamic from real articles */}
-      <section className="py-20 px-4 bg-primary/30">
+      <section className="py-14 sm:py-20 px-4 bg-primary/30">
         <div className="max-w-6xl mx-auto">
           <h2 className="text-3xl font-bold text-center mb-4">
             百家樂<span className="text-accent">數學研究</span>
@@ -237,11 +237,14 @@ export default function Home() {
                   </Link>
                 )}
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                  {satellites.map((post) => (
+                  {satellites.map((post, i) => (
                     <Link
                       key={post.slug}
                       href={`/blog/${post.slug}`}
-                      className="block group"
+                      className={cn(
+                        "block group",
+                        i === 2 && "hidden sm:block"
+                      )}
                     >
                       <Card
                         className="p-6 hover:border-accent/30 transition-colors"
@@ -287,7 +290,7 @@ export default function Home() {
       </section>
 
       {/* Final CTA */}
-      <section className="py-20 px-4 bg-gradient-to-b from-bg to-primary">
+      <section className="py-14 sm:py-20 px-4 bg-gradient-to-b from-bg to-primary">
         <div className="max-w-3xl mx-auto text-center">
           <h2 className="text-3xl sm:text-4xl font-bold mb-6">
             準備好用數學改變你的

@@ -93,8 +93,6 @@ const DialChart = forwardRef<HTMLDivElement, DialChartProps>(function DialChart(
   // θ 角度：180° 對應左端 (10, 60)，270° 對應頂端 (60, 10)，360° 對應右端 (110, 60)
   const beAngleDeg = 180 + (beOnArc / 100) * 180;
   const beAngleRad = (beAngleDeg * Math.PI) / 180;
-  const beX = cx + r * Math.cos(beAngleRad);
-  const beY = cy + r * Math.sin(beAngleRad);
   // 短線方向：沿半徑方向，內外各 4px
   const beInnerX = cx + (r - 5) * Math.cos(beAngleRad);
   const beInnerY = cy + (r - 5) * Math.sin(beAngleRad);
@@ -119,7 +117,7 @@ const DialChart = forwardRef<HTMLDivElement, DialChartProps>(function DialChart(
       title={tooltip}
       {...rest}
     >
-      <div className="relative w-[160px] sm:w-[200px] md:w-[220px] lg:w-[240px] aspect-[12/7]">
+      <div className="relative w-[140px] sm:w-[200px] md:w-[220px] lg:w-[240px] aspect-[12/7]">
         <svg
           viewBox="0 0 120 70"
           width="100%"
@@ -168,28 +166,28 @@ const DialChart = forwardRef<HTMLDivElement, DialChartProps>(function DialChart(
           className="absolute inset-x-0 bottom-0 flex items-end justify-center pb-1"
         >
           <span
-            className="text-3xl md:text-4xl lg:text-5xl font-bold tabular-nums leading-none"
+            className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold tabular-nums leading-none"
             style={{ color: centerTextColor }}
           >
             {value.toFixed(1)}
-            <span className="text-lg md:text-xl lg:text-2xl">%</span>
+            <span className="text-base sm:text-lg md:text-xl lg:text-2xl">%</span>
           </span>
         </div>
       </div>
 
       {/* Label */}
       <div className="flex flex-col items-center gap-1 mt-1">
-        <span className="text-base md:text-lg font-bold text-text leading-tight">
+        <span className="text-sm sm:text-base md:text-lg font-bold text-text leading-tight">
           {label}
         </span>
         {sublabel && (
-          <span className="text-xs md:text-sm text-text-muted leading-tight">
+          <span className="text-[11px] sm:text-xs md:text-sm text-text-muted leading-tight">
             {sublabel}
           </span>
         )}
         <span
           className={cn(
-            "text-xs md:text-sm font-medium tabular-nums",
+            "text-[11px] sm:text-xs md:text-sm font-medium tabular-nums",
             isBeat
               ? "text-[color:var(--color-success)]"
               : "text-[color:var(--color-text-muted)]"

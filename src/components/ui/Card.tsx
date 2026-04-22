@@ -12,16 +12,16 @@ export interface CardProps extends HTMLAttributes<HTMLDivElement> {
 const variantClasses: Record<CardVariant, string> = {
   // 一般卡片容器
   default:
-    "bg-bg-card border border-[color:var(--color-border)] rounded-xl p-5",
+    "bg-bg-card border border-[color:var(--color-border)] rounded-xl p-4 sm:p-5",
   // 金色描邊強調
   accent:
-    "bg-bg-card border border-accent/30 rounded-xl p-5",
+    "bg-bg-card border border-accent/30 rounded-xl p-4 sm:p-5",
   // StatCard：三段式 label / value / sub
   numeric:
-    "bg-bg-card border border-[color:var(--color-border)] rounded-xl p-5 flex flex-col gap-1",
+    "bg-bg-card border border-[color:var(--color-border)] rounded-xl p-4 sm:p-5 flex flex-col gap-1",
   // 密集列表用（如 /hands grid）
   compact:
-    "bg-bg-card border border-[color:var(--color-border)] rounded-xl p-4",
+    "bg-bg-card border border-[color:var(--color-border)] rounded-xl p-3 sm:p-4",
 };
 
 const Card = forwardRef<HTMLDivElement, CardProps>(function Card(

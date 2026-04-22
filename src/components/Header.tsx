@@ -27,9 +27,9 @@ export default function Header() {
               alt="百家之眼"
               width={36}
               height={36}
-              className="rounded-full"
+              className="rounded-full w-8 h-8 sm:w-9 sm:h-9"
             />
-            <span className="text-accent font-bold text-xl tracking-tight">
+            <span className="text-accent font-bold text-lg sm:text-xl tracking-tight">
               百家之眼
             </span>
             <span className="text-text-muted text-sm hidden sm:inline">

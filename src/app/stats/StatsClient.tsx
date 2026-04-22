@@ -77,7 +77,7 @@ function StatCard({
   return (
     <Card variant="numeric">
       <p className="text-xs text-text-muted">{label}</p>
-      <p className={`text-2xl font-bold ${accent ? "text-accent" : "text-text"}`}>
+      <p className={`text-xl sm:text-2xl font-bold ${accent ? "text-accent" : "text-text"}`}>
         {value}
       </p>
       {sub && <p className="text-xs text-text-muted">{sub}</p>}
@@ -110,51 +110,6 @@ function BetBar({ label, count, total, color, unit = "場" }: {
   );
 }
 
-/** 推播 + 命中率合併行 */
-function SignalRow({ label, stat, extra }: {
-  label: string;
-  stat: HitStat;
-  extra?: React.ReactNode;
-}) {
-  const hasHit = stat.rate != null;
-  const pct = stat.rate ?? 0;
-  const barColor =
-    pct >= 50 ? "bg-accent" :
-    pct >= 40 ? "bg-yellow-400" :
-    "bg-white/20";
-
-  return (
-    <div className="py-3 border-b border-white/5 last:border-0">
-      <div className="flex items-center justify-between mb-2">
-        <span className="text-sm font-medium text-text">{label}</span>
-        <span className="text-sm text-text-muted">
-          推了 <span className="text-text font-bold">{fmtNum(stat.signals)}</span> 次
-          {hasHit && (
-            <>，中了 <span className="text-accent font-bold">{fmtNum(stat.hits)}</span> 次</>
-          )}
-        </span>
-      </div>
-      {hasHit && (
-        <div className="flex items-center gap-3">
-          <div className="flex-1 bg-white/5 rounded-full h-1.5 overflow-hidden">
-            <div className={`h-1.5 rounded-full ${barColor}`}
-              style={{ width: `${Math.min(pct, 100).toFixed(1)}%` }} />
-          </div>
-          <span className={`text-xs font-bold w-14 text-right shrink-0 ${
-            pct >= 50 ? "text-accent" : pct >= 40 ? "text-yellow-400" : "text-text-muted"
-          }`}>
-            {pct.toFixed(1)}%
-          </span>
-        </div>
-      )}
-      {!hasHit && (
-        <p className="text-xs text-text-muted">命中率統計累積中</p>
-      )}
-      {extra && <p className="text-xs text-text-muted mt-1">{extra}</p>}
-    </div>
-  );
-}
-
 /** 盈虧區段 */
 function PnlSection({ hr, bet, periodLabel, rebatePct }: {
   hr: EvHitRates;
@@ -166,9 +121,9 @@ function PnlSection({ hr, bet, periodLabel, rebatePct }: {
   const p = pnlPlayer(hr.player, bet.main);
   const s6 = pnlSuper6(hr.super6 as Super6HitStat, bet.side);
 
-  // 對子合併（兩個訊號同時觸發）
-  const pairHits = Math.max(hr.pair_p.hits, hr.pair_b.hits);
-  const pairSigs = Math.max(hr.pair_p.signals, hr.pair_b.signals);
+  // 對子合計：莊對 + 閒對 為兩個獨立注區，每次推播都是兩注
+  const pairHits = hr.pair_p.hits + hr.pair_b.hits;
+  const pairSigs = hr.pair_p.signals + hr.pair_b.signals;
   const pair = pnlPair(pairHits, pairSigs, bet.side);
 
   const totalSignals =
@@ -276,12 +231,97 @@ function PnlSection({ hr, bet, periodLabel, rebatePct }: {
         fmtValue={(n) => `${fmtMoney(n)} 元`}
       />
 
-      {/* 詳細表格 */}
+      {/* 詳細表格（手機卡片堆疊 / 桌機表格） */}
       <div className="bg-bg-card border border-white/5 rounded-xl overflow-hidden">
         <div className="px-4 py-2.5 border-b border-white/5 bg-primary/50">
           <h3 className="text-sm font-bold text-text">各注區盈虧 / 損平點</h3>
         </div>
-        <div className="overflow-x-auto">
+
+        {/* Mobile 卡片堆疊（<640） */}
+        <div className="sm:hidden divide-y divide-white/5">
+          {rows.map((r) => {
+            const beat = r.rate != null && r.rate >= r.be;
+            return (
+              <div key={r.label} className="px-4 py-3 space-y-1.5">
+                <div className="flex items-center justify-between">
+                  <span className="font-bold text-text text-sm">{r.label}</span>
+                  {r.rate != null && (
+                    <span
+                      className={
+                        beat
+                          ? "text-[color:var(--color-success)] text-xs font-bold"
+                          : "text-text-muted text-xs"
+                      }
+                    >
+                      {beat ? "✓ 打平" : "未達損平"}
+                    </span>
+                  )}
+                </div>
+                <div className="text-xs text-text-muted">
+                  推 {fmtNum(r.signals)} · 中 {fmtNum(r.hits)}
+                  {r.rate != null && (
+                    <>
+                      {" · "}
+                      <span className={beat ? "text-accent font-bold" : "text-text-muted"}>
+                        {r.rate.toFixed(2)}%
+                      </span>
+                    </>
+                  )}
+                </div>
+                {r.rate != null && (
+                  <BreakevenGauge
+                    actual={r.rate}
+                    breakeven={r.be}
+                    width={160}
+                  />
+                )}
+                <div className="flex items-center justify-between">
+                  <span className="text-xs text-text-muted">
+                    損平 {r.be.toFixed(2)}%
+                    {"beNote" in r && r.beNote && (
+                      <span className="text-[10px] opacity-60 ml-1">
+                        （{r.beNote}）
+                      </span>
+                    )}
+                  </span>
+                  <span
+                    className={`font-mono font-bold text-sm ${
+                      r.pnl > 0
+                        ? "text-accent"
+                        : r.pnl < 0
+                        ? "text-red-400"
+                        : "text-text-muted"
+                    }`}
+                  >
+                    {fmtMoney(r.pnl)} 元
+                  </span>
+                </div>
+              </div>
+            );
+          })}
+          <div className="px-4 py-3 bg-primary/30 flex items-center justify-between">
+            <span className="font-bold text-text text-sm">合計</span>
+            <div className="text-right">
+              <div className="text-xs text-text-muted">
+                推播 {fmtNum(totalSignals)} 次
+              </div>
+              <div
+                className={`font-mono font-bold text-base ${
+                  totalPnl > 0
+                    ? "text-accent"
+                    : totalPnl < 0
+                    ? "text-red-400"
+                    : "text-text-muted"
+                }`}
+              >
+                {fmtMoney(totalPnl)} 元
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Desktop 表格（sm+） */}
+        <div className="hidden sm:block overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
               <tr className="text-xs text-text-muted border-b border-white/5">
@@ -773,7 +813,7 @@ export default function StatsClient() {
                       ];
 
                       return (
-                        <div className="grid grid-cols-2 gap-6 py-2">
+                        <div className="grid grid-cols-2 gap-3 sm:gap-6 py-2">
                           {dials.map((d) => (
                             <div
                               key={d.label}
@@ -860,7 +900,7 @@ export default function StatsClient() {
                   step={0.1}
                   value={rebatePct}
                   onChange={(e) => setRebatePct(parseFloat(e.target.value))}
-                  className="flex-1 min-w-[120px] accent-accent"
+                  className="flex-1 min-w-[120px] accent-accent [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-5 [&::-webkit-slider-thumb]:h-5 [&::-webkit-slider-thumb]:bg-accent [&::-webkit-slider-thumb]:rounded-full [&::-moz-range-thumb]:w-5 [&::-moz-range-thumb]:h-5 [&::-moz-range-thumb]:bg-accent [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:border-0"
                 />
                 <span className="text-accent font-bold text-sm w-12 text-right shrink-0">
                   {rebatePct.toFixed(1)}%

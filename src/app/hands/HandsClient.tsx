@@ -264,7 +264,7 @@ export default function HandsClient() {
           </div>
           <div>
             <label className="block text-xs text-text-muted mb-1">起始日期 / 時間</label>
-            <div className="flex gap-1">
+            <div className="flex flex-col sm:flex-row gap-1">
               <input
                 type="date"
                 value={dateFrom}
@@ -276,13 +276,13 @@ export default function HandsClient() {
                 value={timeFrom}
                 onChange={(e) => setTimeFrom(e.target.value)}
                 placeholder="00:00"
-                className={cn(compactInputClass, "w-[85px] shrink-0")}
+                className={cn(compactInputClass, "w-full sm:w-[85px] sm:shrink-0")}
               />
             </div>
           </div>
           <div>
             <label className="block text-xs text-text-muted mb-1">結束日期 / 時間</label>
-            <div className="flex gap-1">
+            <div className="flex flex-col sm:flex-row gap-1">
               <input
                 type="date"
                 value={dateTo}
@@ -294,11 +294,11 @@ export default function HandsClient() {
                 value={timeTo}
                 onChange={(e) => setTimeTo(e.target.value)}
                 placeholder="23:59"
-                className={cn(compactInputClass, "w-[85px] shrink-0")}
+                className={cn(compactInputClass, "w-full sm:w-[85px] sm:shrink-0")}
               />
             </div>
           </div>
-          <div>
+          <div className="col-span-2 sm:col-span-1">
             <label className="block text-xs text-text-muted mb-1">排序</label>
             <select
               value={sort}

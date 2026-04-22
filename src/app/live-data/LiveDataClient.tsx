@@ -303,40 +303,42 @@ export default function LiveDataClient() {
       </div>
 
       {/* Table tabs - horizontal scroll (preserve custom scroll behavior) */}
-      <div
-        ref={tabScrollRef}
-        className="flex gap-1.5 mb-5 overflow-x-auto pb-2 scrollbar-hide"
-        style={{ WebkitOverflowScrolling: "touch" }}
-        role="tablist"
-        aria-label="桌台切換"
-      >
-        {currentTables.map((tid) => {
-          const selected = selectedTable === tid;
-          return (
-            <button
-              key={tid}
-              type="button"
-              role="tab"
-              aria-selected={selected}
-              onClick={() => handleTableChange(tid)}
-              className={cn(
-                "shrink-0 inline-flex items-center justify-center font-bold font-mono",
-                "transition-colors duration-[var(--duration-base)] ease-[var(--ease-out)]",
-                "px-3 py-1.5 text-xs rounded-md",
-                "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent",
-                "focus-visible:ring-offset-2 focus-visible:ring-offset-[color:var(--color-bg)]",
-                selected
-                  ? "bg-accent text-primary"
-                  : "bg-[color:var(--color-surface-1)] text-text-muted hover:bg-[color:var(--color-surface-2)] hover:text-text"
-              )}
-            >
-              {tid}
-            </button>
-          );
-        })}
-        {currentTables.length === 0 && (
-          <span className="text-text-muted text-sm py-1">此平台暫無桌局</span>
-        )}
+      <div className="relative mb-5 after:pointer-events-none after:absolute after:right-0 after:top-0 after:bottom-2 after:w-8 after:bg-gradient-to-l after:from-[color:var(--color-bg)] after:to-transparent">
+        <div
+          ref={tabScrollRef}
+          className="flex gap-1.5 overflow-x-auto pb-2 scrollbar-hide"
+          style={{ WebkitOverflowScrolling: "touch" }}
+          role="tablist"
+          aria-label="桌台切換"
+        >
+          {currentTables.map((tid) => {
+            const selected = selectedTable === tid;
+            return (
+              <button
+                key={tid}
+                type="button"
+                role="tab"
+                aria-selected={selected}
+                onClick={() => handleTableChange(tid)}
+                className={cn(
+                  "shrink-0 inline-flex items-center justify-center font-bold font-mono",
+                  "transition-colors duration-[var(--duration-base)] ease-[var(--ease-out)]",
+                  "px-3.5 py-2 min-h-[40px] text-xs rounded-md",
+                  "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent",
+                  "focus-visible:ring-offset-2 focus-visible:ring-offset-[color:var(--color-bg)]",
+                  selected
+                    ? "bg-accent text-primary"
+                    : "bg-[color:var(--color-surface-1)] text-text-muted hover:bg-[color:var(--color-surface-2)] hover:text-text"
+                )}
+              >
+                {tid}
+              </button>
+            );
+          })}
+          {currentTables.length === 0 && (
+            <span className="text-text-muted text-sm py-1">此平台暫無桌局</span>
+          )}
+        </div>
       </div>
 
       {/* Detail area */}
@@ -360,7 +362,7 @@ export default function LiveDataClient() {
           </Card>
 
           {/* Table info bar */}
-          <Card variant="compact" className="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm">
+          <Card variant="compact" className="grid grid-cols-3 gap-2 text-xs sm:flex sm:flex-wrap sm:items-center sm:gap-x-4 sm:gap-y-1 sm:text-sm">
             <span className="text-text-muted">
               荷官：<span className="text-text font-medium">{t.dealer || "-"}</span>
             </span>
@@ -495,7 +497,7 @@ export default function LiveDataClient() {
                   { label: "莊對", value: t.ev_pair_b },
                 ].map(({ label, value }) => (
                   <div key={label} className="text-center">
-                    <div className="text-xs text-text-muted mb-1">{label}</div>
+                    <div className="text-[11px] sm:text-xs text-text-muted mb-1">{label}</div>
                     <div className="text-sm font-mono text-text-muted blur-sm select-none">
                       {value}
                     </div>

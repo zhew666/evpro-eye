@@ -88,48 +88,51 @@ const TheoryBar = forwardRef<HTMLDivElement, TheoryBarProps>(function TheoryBar(
       aria-valuenow={Number(actual.toFixed(2))}
       title={tooltip}
       className={cn(
-        "flex items-center gap-3 group",
+        "flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-3 group",
         className
       )}
       {...rest}
     >
-      {/* Label */}
-      <span className="text-xs text-text-muted w-14 shrink-0">{label}</span>
+      {/* 第一行（mobile）/ 左段（sm+）：Label + Track */}
+      <div className="flex items-center gap-2 sm:gap-3 sm:contents">
+        {/* Label */}
+        <span className="text-xs text-text-muted w-10 sm:w-14 shrink-0">{label}</span>
 
-      {/* Track */}
-      <div className="flex-1 relative h-2.5">
-        {/* 背景 track */}
-        <div className="absolute inset-0 bg-[color:var(--color-surface-1)] rounded-full" />
+        {/* Track */}
+        <div className="flex-1 relative h-2.5">
+          {/* 背景 track */}
+          <div className="absolute inset-0 bg-[color:var(--color-surface-1)] rounded-full" />
 
-        {/* Ghost bar：理論值，半透明 */}
-        <div
-          className="absolute top-0 left-0 h-full rounded-full bg-white/15 transition-[width] duration-500 ease-out"
-          style={{ width: `${theoryClamped.toFixed(2)}%` }}
-          aria-hidden
-        />
+          {/* Ghost bar：理論值，半透明 */}
+          <div
+            className="absolute top-0 left-0 h-full rounded-full bg-white/15 transition-[width] duration-500 ease-out"
+            style={{ width: `${theoryClamped.toFixed(2)}%` }}
+            aria-hidden
+          />
 
-        {/* Solid bar：實際值 */}
-        <div
-          className={cn(
-            "absolute top-0 left-0 h-full rounded-full transition-[width] duration-500 ease-out",
-            toneBgMap[tone]
-          )}
-          style={{ width: `${actualClamped.toFixed(2)}%` }}
-          aria-hidden
-        />
+          {/* Solid bar：實際值 */}
+          <div
+            className={cn(
+              "absolute top-0 left-0 h-full rounded-full transition-[width] duration-500 ease-out",
+              toneBgMap[tone]
+            )}
+            style={{ width: `${actualClamped.toFixed(2)}%` }}
+            aria-hidden
+          />
 
-        {/* 理論值垂直標記（金色豎線） */}
-        <div
-          className="absolute -top-0.5 -bottom-0.5 w-[2px] bg-accent rounded-full shadow-[0_0_6px_rgba(212,175,55,0.6)]"
-          style={{
-            left: `calc(${theoryClamped.toFixed(2)}% - 1px)`,
-          }}
-          aria-hidden
-        />
+          {/* 理論值垂直標記（金色豎線） */}
+          <div
+            className="absolute -top-0.5 -bottom-0.5 w-[2px] bg-accent rounded-full shadow-[0_0_6px_rgba(212,175,55,0.6)]"
+            style={{
+              left: `calc(${theoryClamped.toFixed(2)}% - 1px)`,
+            }}
+            aria-hidden
+          />
+        </div>
       </div>
 
-      {/* Stats */}
-      <div className="w-32 shrink-0 text-right flex flex-col leading-tight">
+      {/* 第二行（mobile）/ 右段（sm+）：Stats */}
+      <div className="w-full sm:w-32 shrink-0 text-right flex flex-col leading-tight">
         <span className="text-2xs text-text-dim">
           {countFormatted} / {totalFormatted} {unit}
         </span>

@@ -592,7 +592,7 @@ export default function QuizClient() {
 
       {/* 選項或翻牌回饋 */}
       {phase === "playing" && (
-        <div className="grid grid-cols-4 gap-2">
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
           {(["banker", "player", "tie", "skip"] as const).map((c) => (
             <ChoiceButton
               key={c}
@@ -627,7 +627,7 @@ export default function QuizClient() {
             </div>
           </Card>
 
-          <div className="grid grid-cols-4 gap-2">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
             {(["banker", "player", "tie", "skip"] as const).map((c) => (
               <ChoiceButton
                 key={c}
@@ -714,7 +714,7 @@ function IdleView({
   ].join(" ");
 
   return (
-    <div className="max-w-3xl mx-auto px-4 py-12 sm:py-16 text-center">
+    <div className="max-w-3xl mx-auto px-4 py-8 sm:py-16 text-center">
       <h1 className="text-3xl sm:text-5xl font-extrabold mb-4 leading-tight">
         看路法真的有用嗎？
         <br />
@@ -749,7 +749,7 @@ function IdleView({
       </div>
 
       {/* 模式選擇：兩張 Card 並排 */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-2xl mx-auto mb-8">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-2xl mx-auto mb-8">
         <ModeCard
           icon="🔗"
           title="同靴 10 連問"
@@ -998,7 +998,7 @@ function FinishedView({
         <div className="grid grid-cols-3 gap-3">
           <Card variant="numeric">
             <span className="text-text-muted text-xs">你</span>
-            <span className="text-2xl sm:text-3xl font-bold text-accent">
+            <span className="text-xl sm:text-3xl font-bold text-accent">
               {score.rate === null ? "—" : `${score.rate.toFixed(0)}%`}
             </span>
             <span className="text-text-muted text-xs">
@@ -1007,12 +1007,12 @@ function FinishedView({
           </Card>
           <Card variant="numeric">
             <span className="text-text-muted text-xs">隨機</span>
-            <span className="text-2xl sm:text-3xl font-bold text-text">{RANDOM_BANKER_RATE}%</span>
+            <span className="text-xl sm:text-3xl font-bold text-text">{RANDOM_BANKER_RATE}%</span>
             <span className="text-text-muted text-xs">若都選莊</span>
           </Card>
           <Card variant="numeric">
             <span className="text-text-muted text-xs">系統</span>
-            <span className="text-2xl sm:text-3xl font-bold text-[color:var(--color-success)]">
+            <span className="text-xl sm:text-3xl font-bold text-[color:var(--color-success)]">
               {systemRate}%
             </span>
             <span className="text-text-muted text-xs">百家之眼推播</span>

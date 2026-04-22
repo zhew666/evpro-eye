@@ -45,15 +45,6 @@ const toneDotMap: Record<FlowStepTone, string> = {
   accent: "bg-accent",
 };
 
-const toneBarMap: Record<FlowStepTone, string> = {
-  banker: "bg-[color:var(--color-banker)]/60",
-  player: "bg-[color:var(--color-player)]/60",
-  super6: "bg-[color:var(--color-super6)]/60",
-  pair: "bg-[color:var(--color-pair)]/60",
-  neutral: "bg-[color:var(--color-surface-2)]",
-  accent: "bg-accent/60",
-};
-
 function defaultFmt(n: number): string {
   const sign = n >= 0 ? "+" : "";
   return sign + n.toLocaleString("zh-TW", { maximumFractionDigits: 0 });
@@ -135,16 +126,34 @@ const FlowCard = forwardRef<HTMLDivElement, FlowCardProps>(function FlowCard(
                 </span>
               </div>
 
-              {/* bar */}
-              <div className="flex-1 relative h-1.5 bg-[color:var(--color-surface-1)] rounded-full overflow-hidden">
+              {/* bar — diverging（中心軸雙向）：正往右走 success，負往左走 error */}
+              <div className="flex-1 relative h-2 bg-[color:var(--color-surface-1)] rounded-full">
+                {/* 中心軸 0 位置標記 */}
                 <div
-                  className={cn(
-                    "absolute top-0 left-0 h-full rounded-full transition-[width] duration-300 ease-out",
-                    toneBarMap[tone]
-                  )}
-                  style={{ width: `${barPct.toFixed(2)}%` }}
+                  className="absolute top-[-2px] bottom-[-2px] left-1/2 w-px bg-[color:var(--color-border-strong)]"
                   aria-hidden
                 />
+                {step.value > 0 ? (
+                  // 正值：從中心往右長
+                  <div
+                    className="absolute top-0 h-full bg-[color:var(--color-success)]/75 rounded-r-full transition-[width] duration-300 ease-out"
+                    style={{
+                      left: "50%",
+                      width: `${(barPct / 2).toFixed(2)}%`,
+                    }}
+                    aria-hidden
+                  />
+                ) : step.value < 0 ? (
+                  // 負值：從中心往左長
+                  <div
+                    className="absolute top-0 h-full bg-[color:var(--color-error)]/75 rounded-l-full transition-[width] duration-300 ease-out"
+                    style={{
+                      right: "50%",
+                      width: `${(barPct / 2).toFixed(2)}%`,
+                    }}
+                    aria-hidden
+                  />
+                ) : null}
               </div>
 
               {/* value */}
