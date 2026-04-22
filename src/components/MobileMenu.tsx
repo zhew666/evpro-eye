@@ -8,6 +8,8 @@ const navItems = [
   { label: "EV教學", href: "/ev-guide" },
   { label: "功能介紹", href: "/features" },
   { label: "即時數據", href: "/live-data" },
+  { label: "近期戰報", href: "/stats" },
+  { label: "歷史牌局", href: "/hands" },
   { label: "部落格", href: "/blog" },
   { label: "FAQ", href: "/faq" },
 ];

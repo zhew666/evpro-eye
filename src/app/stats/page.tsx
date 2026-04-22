@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import StatsClient from "./StatsClient";
 
 export const metadata: Metadata = {
-  robots: { index: false, follow: false },
   title: "歷史統計數據 — 莊閒勝率、Super6 命中、EV 訊號分析",
   description:
     "查看百家之眼監控的 MT + DG 百家樂歷史統計：莊閒勝率、和局率、Super6 出現頻率、正EV訊號分布，支援近一週 / 近一個月切換。",

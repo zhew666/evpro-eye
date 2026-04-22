@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useCallback, useRef, useMemo } from "react";
+import { RoadsPanel, type ApiHand as RoadApiHand } from "@/components/BaccaratRoads";
 
 /* ─── Types ────────────────────────────────────────── */
 
@@ -30,11 +31,6 @@ interface ListResponse {
   dg_tables: number;
 }
 
-interface EvSnapshot {
-  ev_banker: string; ev_player: string; ev_tie: string;
-  ev_super6: string; ev_pair_p: string; ev_pair_b: string;
-}
-
 interface HistoryHand {
   hand_num: number;
   p1: string; p2: string; p3: string;
@@ -58,6 +54,14 @@ interface DetailResponse {
   };
   history: HistoryHand[];
   screenshot_url: string | null;
+}
+
+interface ShoeResponse {
+  table_id: string;
+  shoe: number | null;
+  shoe_started_at: string | null;
+  total_hands: number;
+  hands: RoadApiHand[];
 }
 
 /* ─── Utils ────────────────────────────────────────── */
@@ -109,6 +113,7 @@ function ResultBadge({ result }: { result: string }) {
 export default function LiveDataClient() {
   const [listData, setListData] = useState<ListResponse | null>(null);
   const [detail, setDetail] = useState<DetailResponse | null>(null);
+  const [shoeHands, setShoeHands] = useState<RoadApiHand[]>([]);
   const [platform, setPlatform] = useState<string>("MT");
   const [selectedTable, setSelectedTable] = useState<string>("");
   const [loading, setLoading] = useState(true);
@@ -117,9 +122,12 @@ export default function LiveDataClient() {
   const [countdown, setCountdown] = useState(10);
   const tabScrollRef = useRef<HTMLDivElement>(null);
 
-  // Accumulate EV snapshots per hand (keyed by "tableId:shoe:hand_num")
-  const evCacheRef = useRef<Record<string, EvSnapshot>>({});
-  const lastSeenRef = useRef<{ tableId: string; shoe: number; handNum: number }>({ tableId: "", shoe: 0, handNum: 0 });
+  // DB EV lookup by hand_num (from /shoe API)
+  const evByHand = useMemo(() => {
+    const map: Record<number, RoadApiHand> = {};
+    for (const h of shoeHands) map[h.hand_num] = h;
+    return map;
+  }, [shoeHands]);
 
   // Fetch table list
   const fetchList = useCallback(async () => {
@@ -138,6 +146,19 @@ export default function LiveDataClient() {
     }
   }, []);
 
+  // Fetch shoe hands for road rendering (fire-and-forget, parallel with detail)
+  const fetchShoe = useCallback(async (tableId: string) => {
+    if (!tableId) return;
+    try {
+      const res = await fetch(`/api/live-data/${encodeURIComponent(tableId)}/shoe`);
+      if (!res.ok) throw new Error("Failed to fetch shoe");
+      const json: ShoeResponse = await res.json();
+      setShoeHands(json.hands || []);
+    } catch {
+      setShoeHands([]);
+    }
+  }, []);
+
   // Fetch single table detail + accumulate EV
   const fetchDetail = useCallback(async (tableId: string) => {
     if (!tableId) return;
@@ -147,29 +168,6 @@ export default function LiveDataClient() {
       if (!res.ok) throw new Error("Failed to fetch detail");
       const json: DetailResponse = await res.json();
       setDetail(json);
-
-      // Accumulate EV snapshot for current hand
-      const t = json.table;
-      if (t && t.hand_num > 0) {
-        const prev = lastSeenRef.current;
-        // Reset cache on table or shoe change
-        if (prev.tableId !== t.table_id || prev.shoe !== t.shoe) {
-          evCacheRef.current = {};
-        }
-        lastSeenRef.current = { tableId: t.table_id, shoe: t.shoe, handNum: t.hand_num };
-
-        const key = `${t.table_id}:${t.shoe}:${t.hand_num}`;
-        if (!evCacheRef.current[key]) {
-          evCacheRef.current[key] = {
-            ev_banker: t.ev_banker,
-            ev_player: t.ev_player,
-            ev_tie: t.ev_tie,
-            ev_super6: t.ev_super6,
-            ev_pair_p: t.ev_pair_p,
-            ev_pair_b: t.ev_pair_b,
-          };
-        }
-      }
     } catch {
       setDetail(null);
     } finally {
@@ -187,23 +185,23 @@ export default function LiveDataClient() {
         if (platformTables.length > 0) {
           setPlatform(firstPlatform);
           setSelectedTable(platformTables[0]);
-          await fetchDetail(platformTables[0]);
+          await Promise.all([fetchDetail(platformTables[0]), fetchShoe(platformTables[0])]);
         }
       }
     })();
-  }, [fetchList, fetchDetail]);
+  }, [fetchList, fetchDetail, fetchShoe]);
 
   // Auto refresh every 10s
   useEffect(() => {
     const interval = setInterval(async () => {
       await fetchList();
       if (selectedTable) {
-        await fetchDetail(selectedTable);
+        await Promise.all([fetchDetail(selectedTable), fetchShoe(selectedTable)]);
       }
       setCountdown(10);
     }, 10000);
     return () => clearInterval(interval);
-  }, [fetchList, fetchDetail, selectedTable]);
+  }, [fetchList, fetchDetail, fetchShoe, selectedTable]);
 
   // Countdown
   useEffect(() => {
@@ -219,20 +217,21 @@ export default function LiveDataClient() {
     if (listData?.tables_by_platform[p]?.length) {
       const firstTable = listData.tables_by_platform[p][0];
       setSelectedTable(firstTable);
-      await fetchDetail(firstTable);
+      setShoeHands([]);
+      await Promise.all([fetchDetail(firstTable), fetchShoe(firstTable)]);
     } else {
       setSelectedTable("");
       setDetail(null);
+      setShoeHands([]);
     }
-  }, [listData, fetchDetail]);
+  }, [listData, fetchDetail, fetchShoe]);
 
   // Switch table
   const handleTableChange = useCallback(async (tableId: string) => {
     setSelectedTable(tableId);
-    evCacheRef.current = {};
-    lastSeenRef.current = { tableId: "", shoe: 0, handNum: 0 };
-    await fetchDetail(tableId);
-  }, [fetchDetail]);
+    setShoeHands([]);
+    await Promise.all([fetchDetail(tableId), fetchShoe(tableId)]);
+  }, [fetchDetail, fetchShoe]);
 
   // Touch scrolling for tab bar - handled by CSS overflow-x-auto
 
@@ -358,6 +357,11 @@ export default function LiveDataClient() {
             </span>
           </div>
 
+          {/* 五路面板（大路常駐、其餘展開） */}
+          <div className="bg-bg-card border border-white/5 rounded-xl p-3">
+            <RoadsPanel hands={shoeHands} />
+          </div>
+
           {/* Hand history */}
           <div className="bg-bg-card border border-white/5 rounded-xl overflow-hidden">
             <div className="px-4 py-2.5 border-b border-white/5 bg-primary/50">
@@ -403,9 +407,13 @@ export default function LiveDataClient() {
                     const pCards = [hand.p1, hand.p2, hand.p3].filter((c) => c && c !== "" && c !== "-");
                     const bCards = [hand.b1, hand.b2, hand.b3].filter((c) => c && c !== "" && c !== "-");
 
-                    // Look up accumulated EV for this hand
-                    const evKey = `${detail.table.table_id}:${detail.table.shoe}:${hand.hand_num}`;
-                    const ev = evCacheRef.current[evKey];
+                    // Look up DB EV for this hand (from /shoe API)
+                    const ev = evByHand[hand.hand_num];
+                    const hasEv =
+                      ev &&
+                      (ev.ev_banker != null ||
+                        ev.ev_player != null ||
+                        ev.ev_tie != null);
 
                     return (
                       <div key={hand.hand_num} className="px-4 py-2.5">
@@ -426,7 +434,7 @@ export default function LiveDataClient() {
                             <ResultBadge result={result} />
                           </span>
                         </div>
-                        {ev && (
+                        {hasEv && (
                           <div className="flex flex-wrap gap-x-2 gap-y-0.5 mt-1 ml-8 text-[10px] font-mono text-text-muted">
                             {[
                               { label: "莊", val: ev.ev_banker },
@@ -436,12 +444,12 @@ export default function LiveDataClient() {
                               { label: "閒對", val: ev.ev_pair_p },
                               { label: "莊對", val: ev.ev_pair_b },
                             ].map(({ label, val }) => {
-                              const n = parseFloat(val);
+                              if (val == null) return null;
                               return (
                                 <span key={label}>
                                   {label}
-                                  <span className={n > 0 ? "text-green-400" : ""}>
-                                    {n > 0 ? "+" : ""}{n.toFixed(4)}
+                                  <span className={val > 0 ? "text-green-400" : ""}>
+                                    {val > 0 ? "+" : ""}{val.toFixed(4)}
                                   </span>
                                 </span>
                               );
