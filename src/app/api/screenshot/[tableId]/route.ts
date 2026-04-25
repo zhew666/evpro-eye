@@ -11,8 +11,8 @@ export async function GET(
 
   const { tableId } = await params;
 
-  // 從 Supabase Storage 私有 bucket 讀取截圖
-  const url = `${SUPABASE_URL}/storage/v1/object/screenshots/live/${encodeURIComponent(tableId)}.png`;
+  // 從 Supabase Storage 讀取截圖（JPEG，由爬蟲腳本上傳）
+  const url = `${SUPABASE_URL}/storage/v1/object/screenshots/live/${encodeURIComponent(tableId)}.jpg`;
 
   try {
     const res = await fetch(url, {
@@ -31,7 +31,7 @@ export async function GET(
 
     return new Response(buffer, {
       headers: {
-        "Content-Type": "image/png",
+        "Content-Type": "image/jpeg",
         "Cache-Control": "no-cache, no-store, must-revalidate",
       },
     });
