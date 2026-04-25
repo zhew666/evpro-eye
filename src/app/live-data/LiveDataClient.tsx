@@ -130,6 +130,7 @@ export default function LiveDataClient() {
   const [detailLoading, setDetailLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [countdown, setCountdown] = useState(10);
+  const [shotVersion, setShotVersion] = useState(() => Date.now());
   const tabScrollRef = useRef<HTMLDivElement>(null);
 
   // DB EV lookup by hand_num (from /shoe API)
@@ -209,6 +210,7 @@ export default function LiveDataClient() {
         await Promise.all([fetchDetail(selectedTable), fetchShoe(selectedTable)]);
       }
       setCountdown(10);
+      setShotVersion(Date.now());     // 強制截圖 <img> 重抓
     }, 10000);
     return () => clearInterval(interval);
   }, [fetchList, fetchDetail, fetchShoe, selectedTable]);
@@ -240,6 +242,7 @@ export default function LiveDataClient() {
   const handleTableChange = useCallback(async (tableId: string) => {
     setSelectedTable(tableId);
     setShoeHands([]);
+    setShotVersion(Date.now());      // 切桌立刻換截圖
     await Promise.all([fetchDetail(tableId), fetchShoe(tableId)]);
   }, [fetchDetail, fetchShoe]);
 
@@ -350,14 +353,21 @@ export default function LiveDataClient() {
         <div className="text-center py-16 text-text-muted">請選擇一張桌台</div>
       ) : (
         <div className="space-y-4">
-          {/* Screenshot placeholder */}
-          {/* Screenshot area */}
+          {/* 即時截圖 — 由 VPS 截圖循環腳本上傳到 Supabase Storage */}
           <Card className="relative w-full p-0 overflow-hidden">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
-              src="/mt-live-banner.png"
-              alt="MT 真人百家樂"
+              src={`/api/screenshot/${encodeURIComponent(t.table_id)}?v=${shotVersion}`}
+              alt={`${t.table_id} 桌台即時畫面`}
               className="w-full h-auto object-cover"
+              onError={(e) => {
+                // 截圖暫時抓不到時 fallback 靜態 banner
+                const img = e.currentTarget;
+                if (!img.dataset.fallback) {
+                  img.dataset.fallback = "1";
+                  img.src = "/mt-live-banner.png";
+                }
+              }}
             />
           </Card>
 
