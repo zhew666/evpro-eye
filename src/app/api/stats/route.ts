@@ -4,11 +4,6 @@ import type { StatsResponse, EvSignalStats } from "@/lib/stats";
 const SUPABASE_URL = process.env.SUPABASE_URL || "";
 const SUPABASE_ANON_KEY = process.env.SUPABASE_ANON_KEY || "";
 
-// 資料起算下限：2026-04-22 00:00 台灣時間 (= 04-21 16:00 UTC)
-// 原因：之前 hand_results 的 is_super6_natural 分類有 bug（natural 佔 70% 異常，
-//      理論應 17%），S6 盈虧試算因此嚴重偏低。等爬蟲修好後可移除此下限。
-const DATA_FLOOR_ISO = "2026-04-21T16:00:00.000Z";
-
 export const revalidate = 60;
 
 async function supabaseRpc(fn: string, body: Record<string, unknown>) {
@@ -119,17 +114,6 @@ export async function GET(request: NextRequest) {
   } else {
     periodDays = period === "30d" ? 30 : 7;
     since = new Date(Date.now() - periodDays * 24 * 60 * 60 * 1000).toISOString();
-  }
-
-  // 套用下限：避免納入 S6 分類錯誤的舊資料
-  if (since < DATA_FLOOR_ISO) {
-    since = DATA_FLOOR_ISO;
-    // 重算 periodDays = since 到現在的天數（用於 ROI、平均值等計算）
-    const daysFromFloor = Math.max(
-      1,
-      Math.ceil((Date.now() - new Date(DATA_FLOOR_ISO).getTime()) / (24 * 60 * 60 * 1000)),
-    );
-    periodDays = Math.min(periodDays, daysFromFloor);
   }
 
   try {
