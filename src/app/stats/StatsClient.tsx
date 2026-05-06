@@ -110,12 +110,21 @@ function BetBar({ label, count, total, color, unit = "場" }: {
   );
 }
 
+/** 注區開關 */
+interface BetEnabled {
+  banker: boolean;
+  player: boolean;
+  super6: boolean;
+  pair: boolean;
+}
+
 /** 盈虧區段 */
-function PnlSection({ hr, bet, periodLabel, rebatePct }: {
+function PnlSection({ hr, bet, periodLabel, rebatePct, enabled }: {
   hr: EvHitRates;
   bet: BetSize;
   periodLabel: string;
   rebatePct: number; // 反水比例 0.4 - 1.2 (%)
+  enabled: BetEnabled;
 }) {
   const b = pnlBanker(hr.banker, bet.main);
   const p = pnlPlayer(hr.player, bet.main);
@@ -126,71 +135,84 @@ function PnlSection({ hr, bet, periodLabel, rebatePct }: {
   const pairSigs = hr.pair_p.signals + hr.pair_b.signals;
   const pair = pnlPair(pairHits, pairSigs, bet.side);
 
-  const totalSignals =
-    hr.banker.signals + hr.player.signals + (hr.super6 as Super6HitStat).signals + pairSigs;
-  const mainTurnover =
-    (hr.banker.signals + hr.player.signals) * bet.main;
-  const sideTurnover =
-    ((hr.super6 as Super6HitStat).signals + pairSigs) * bet.side;
+  // 依 enabled 決定計入哪些注區
+  const useBanker = enabled.banker ? hr.banker.signals : 0;
+  const usePlayer = enabled.player ? hr.player.signals : 0;
+  const useSuper6 = enabled.super6 ? (hr.super6 as Super6HitStat).signals : 0;
+  const usePair = enabled.pair ? pairSigs : 0;
+  const totalSignals = useBanker + usePlayer + useSuper6 + usePair;
+
+  const mainTurnover = (useBanker + usePlayer) * bet.main;
+  const sideTurnover = (useSuper6 + usePair) * bet.side;
   const totalTurnover = mainTurnover + sideTurnover;
-  const basePnl = b.pnl + p.pnl + s6.pnl + pair.pnl;
+
+  const bPnl = enabled.banker ? b.pnl : 0;
+  const pPnl = enabled.player ? p.pnl : 0;
+  const s6Pnl = enabled.super6 ? s6.pnl : 0;
+  const pairPnl = enabled.pair ? pair.pnl : 0;
+  const basePnl = bPnl + pPnl + s6Pnl + pairPnl;
+
   const rebateAmount = totalTurnover * (rebatePct / 100);
   const totalPnl = basePnl + rebateAmount;
   const roi = totalTurnover > 0 ? (totalPnl / totalTurnover) * 100 : 0;
 
-  const rows = [
+  const allRows = [
     {
+      key: "banker",
       label: "莊注",
       signals: hr.banker.signals,
       hits: hr.banker.hits,
       rate: hr.banker.rate,
       be: b.breakeven,
-      pnl: b.pnl,
+      pnl: bPnl,
       bet: bet.main,
     },
     {
+      key: "player",
       label: "閒注",
       signals: hr.player.signals,
       hits: hr.player.hits,
       rate: hr.player.rate,
       be: p.breakeven,
-      pnl: p.pnl,
+      pnl: pPnl,
       bet: bet.main,
     },
     {
+      key: "super6",
       label: "Super6",
       signals: hr.super6.signals,
       hits: hr.super6.hits,
       rate: hr.super6.rate,
       be: s6.blendedBE, // 依實際 natural/draw 混合比例算
       beNote: `自然 ${s6.naturalBE.toFixed(2)}% / 補牌 ${s6.drawBE.toFixed(2)}%`,
-      pnl: s6.pnl,
+      pnl: s6Pnl,
       bet: bet.side,
     },
     {
+      key: "pair",
       label: "對子",
       signals: pairSigs,
       hits: pairHits,
       rate: pairSigs > 0 ? (pairHits / pairSigs) * 100 : null,
       be: pair.breakeven,
-      pnl: pair.pnl,
+      pnl: pairPnl,
       bet: bet.side,
     },
   ];
+  const rows = allRows.filter((r) => enabled[r.key as keyof BetEnabled]);
 
-  // FlowCard steps：各注區 pnl 貢獻 + 反水
-  const flowSteps: FlowStep[] = [
-    { label: "莊注盈虧", value: b.pnl, tone: "banker" },
-    { label: "閒注盈虧", value: p.pnl, tone: "player" },
-    { label: "Super6 盈虧", value: s6.pnl, tone: "super6" },
-    { label: "對子盈虧", value: pair.pnl, tone: "pair" },
-    { label: "基礎合計", value: basePnl, tone: "neutral" },
-    {
-      label: `反水 ${rebatePct.toFixed(1)}%`,
-      value: rebateAmount,
-      tone: "accent",
-    },
-  ];
+  // FlowCard steps：依 enabled 過濾
+  const flowSteps: FlowStep[] = [];
+  if (enabled.banker) flowSteps.push({ label: "莊注盈虧", value: bPnl, tone: "banker" });
+  if (enabled.player) flowSteps.push({ label: "閒注盈虧", value: pPnl, tone: "player" });
+  if (enabled.super6) flowSteps.push({ label: "Super6 盈虧", value: s6Pnl, tone: "super6" });
+  if (enabled.pair) flowSteps.push({ label: "對子盈虧", value: pairPnl, tone: "pair" });
+  flowSteps.push({ label: "基礎合計", value: basePnl, tone: "neutral" });
+  flowSteps.push({
+    label: `反水 ${rebatePct.toFixed(1)}%`,
+    value: rebateAmount,
+    tone: "accent",
+  });
 
   return (
     <div className="space-y-4">
@@ -484,6 +506,9 @@ export default function StatsClient() {
   const [error, setError] = useState<string | null>(null);
   const [betIdx, setBetIdx] = useState(0); // 預設第一個: 1000/300
   const [rebatePct, setRebatePct] = useState(0.6); // 反水 0.4% - 1.2%
+  const [betEnabled, setBetEnabled] = useState<BetEnabled>({
+    banker: true, player: true, super6: true, pair: true,
+  });
 
   const fetchStats = useCallback(async (p: Period) => {
     setLoading(true);
@@ -890,6 +915,29 @@ export default function StatsClient() {
                 />
               </div>
 
+              {/* 注區開關（勾選計入哪些注區的盈虧） */}
+              <div className="flex flex-wrap items-center gap-x-4 gap-y-2 mb-3 bg-bg-card/50 border border-white/5 rounded-lg px-4 py-2.5">
+                <span className="text-text-muted text-sm shrink-0">計入注區</span>
+                {([
+                  { key: "banker", label: "莊", color: "var(--color-banker)" },
+                  { key: "player", label: "閒", color: "var(--color-player)" },
+                  { key: "super6", label: "Super6", color: "var(--color-super6)" },
+                  { key: "pair", label: "對子", color: "var(--color-pair)" },
+                ] as const).map((x) => (
+                  <label key={x.key} className="flex items-center gap-1.5 cursor-pointer text-sm select-none">
+                    <input
+                      type="checkbox"
+                      checked={betEnabled[x.key]}
+                      onChange={(e) =>
+                        setBetEnabled((prev) => ({ ...prev, [x.key]: e.target.checked }))
+                      }
+                      className="w-4 h-4 accent-accent cursor-pointer"
+                    />
+                    <span style={{ color: x.color }} className="font-bold">{x.label}</span>
+                  </label>
+                ))}
+              </div>
+
               {/* 反水調整 */}
               <div className="flex flex-wrap items-center gap-3 mb-4 bg-bg-card/50 border border-white/5 rounded-lg px-4 py-2.5">
                 <span className="text-text-muted text-sm shrink-0">反水比例</span>
@@ -915,6 +963,7 @@ export default function StatsClient() {
                 bet={BET_SIZES[betIdx]}
                 periodLabel={periodLabel}
                 rebatePct={rebatePct}
+                enabled={betEnabled}
               />
             </div>
           )}
