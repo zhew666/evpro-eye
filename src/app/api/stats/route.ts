@@ -144,7 +144,14 @@ export async function GET(request: NextRequest) {
       };
     }
 
-    return NextResponse.json(response);
+    // 條件式 cache：RPC 成功且有資料才 cache，失敗回應不 cache（避免 fallback 卡住）
+    return NextResponse.json(response, {
+      headers: {
+        "Cache-Control": response.has_hand_data
+          ? "public, s-maxage=180, stale-while-revalidate=120"
+          : "no-store",
+      },
+    });
   } catch (err) {
     console.error("[stats API]", err);
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
