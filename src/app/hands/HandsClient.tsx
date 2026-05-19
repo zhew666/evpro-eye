@@ -46,7 +46,6 @@ const SORT_OPTIONS: { value: string; label: string }[] = [
   { value: "banker_streak", label: "連莊最長" },
   { value: "player_streak", label: "連閒最長" },
   { value: "big_eye_alt",   label: "大眼仔雙跳最長" },
-  { value: "super6",        label: "Super6 最多" },
 ];
 
 /* ─── 工具 ──────────────────────────────────── */
@@ -125,11 +124,6 @@ function ShoeCard({ item }: { item: ShoeItem }) {
           {item.has_long_dragon && (
             <Badge tone="warning" size="sm">
               長龍
-            </Badge>
-          )}
-          {item.super6_count > 0 && (
-            <Badge tone="game-super6" size="sm">
-              S6×{item.super6_count}
             </Badge>
           )}
           {item.big_eye_longest_alt >= 4 && (

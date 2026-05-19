@@ -420,11 +420,11 @@ function PnlSection({ hr, bet, periodLabel, rebatePct, enabled }: {
       <Card className="text-xs text-text-muted leading-relaxed" variant="compact">
         <p className="mb-1">
           <span className="text-accent font-bold">損平點</span>：命中率要達多少才不賠錢。
-          莊／閒注皆 50%、Super6 補牌（20倍）4.76%、自然（12倍）7.69%、對子（11倍）8.33%。
+          莊／閒注皆 50%。
         </p>
         <p className="mb-1">
           <span className="text-accent font-bold">盈虧計算</span>：
-          莊／閒皆 1:1、Super6 補牌 20 倍 / 自然 12 倍、對子 11 倍。和局退注不計。
+          莊／閒皆 1:1。和局退注不計。
         </p>
         <p>
           <span className="text-accent font-bold">反水</span>：
@@ -507,7 +507,7 @@ export default function StatsClient() {
   const [betIdx, setBetIdx] = useState(0); // 預設第一個: 1000/300
   const [rebatePct, setRebatePct] = useState(0.6); // 反水 0.4% - 1.2%
   const [betEnabled, setBetEnabled] = useState<BetEnabled>({
-    banker: true, player: true, super6: true, pair: true,
+    banker: true, player: true, super6: false, pair: false,
   });
 
   const fetchStats = useCallback(async (p: Period) => {
@@ -638,21 +638,6 @@ export default function StatsClient() {
                     </p>
                   </Card>
 
-                  {/* 其他統計 */}
-                  <div className="grid grid-cols-2 gap-4">
-                    <StatCard
-                      label="對子出現"
-                      value={`${fmtNum(pairTotal)} 次`}
-                      sub={`莊對 ${fmtNum(hs.pair_b_count)} ／ 閒對 ${fmtNum(hs.pair_p_count)}`}
-                    />
-                    <StatCard
-                      label="Super6 出現"
-                      value={`${fmtNum(hs.super6_count)} 次`}
-                      sub={`自然12倍 ${fmtNum(hs.super6_natural_count)} ／ 補牌20倍 ${fmtNum(hs.super6_draw_count)}`}
-                      accent
-                    />
-                  </div>
-
                 </div>
               );
             })()}
@@ -738,7 +723,7 @@ export default function StatsClient() {
                     <StatCard
                       label="推播分布"
                       value={`莊 ${fmtNum(ev.banker_signals)} ／ 閒 ${fmtNum(ev.player_signals)}`}
-                      sub={`Super6 ${fmtNum(ev.super6_signals)} ／ 對子 ${fmtNum(pairSignals)}`}
+                      sub="正 EV 訊號分佈"
                     />
                   </div>
 
@@ -749,8 +734,6 @@ export default function StatsClient() {
                       {[
                         { label: "莊",   count: ev.by_bet.banker, color: "bg-accent" },
                         { label: "閒",   count: ev.by_bet.player, color: "bg-blue-400" },
-                        { label: "S6",   count: ev.by_bet.super6, color: "bg-purple-400" },
-                        { label: "對子", count: ev.by_bet.pair_p + ev.by_bet.pair_b, color: "bg-pink-400" },
                         { label: "和",   count: ev.by_bet.tie,    color: "bg-green-400" },
                       ].map((item) => (
                         <BetBar key={item.label} label={item.label}
@@ -772,18 +755,6 @@ export default function StatsClient() {
                       莊／閒命中率不計和局（和局視為退注）。
                     </p>
                     {(() => {
-                      // Dial 2×2 grid：莊、閒、S6、對子
-                      const s6Stat = hr?.super6 as Super6HitStat | undefined;
-                      const s6BE = (() => {
-                        if (!s6Stat) return (1 / 13) * 100;
-                        const totalHits = s6Stat.hits_natural + s6Stat.hits_draw;
-                        if (totalHits === 0) return (1 / 13) * 100;
-                        const avgPayout =
-                          (s6Stat.hits_natural * 12 + s6Stat.hits_draw * 20) /
-                          totalHits;
-                        return (1 / (avgPayout + 1)) * 100;
-                      })();
-
                       // 以 breakeven 為中心對稱 → tick 永遠在儀表正中央
                       const centered = (be: number, half: number) => ({
                         min: Math.max(0, be - half),
@@ -815,25 +786,6 @@ export default function StatsClient() {
                           tone: "game-player",
                           sublabel: `推 ${fmtNum(rows[1].stat.signals)} 中 ${fmtNum(rows[1].stat.hits)}`,
                           ...centered(50, 10),
-                        },
-                        {
-                          label: "Super6",
-                          value: rows[2].stat.rate,
-                          breakeven: s6BE,
-                          tone: "game-super6",
-                          sublabel: `推 ${fmtNum(rows[2].stat.signals)} 中 ${fmtNum(rows[2].stat.hits)}`,
-                          ...centered(s6BE, 6),
-                          extra: s6Stat && s6Stat.hits > 0
-                            ? `12倍 ${s6Stat.hits_natural} 次 / 20倍 ${s6Stat.hits_draw} 次`
-                            : undefined,
-                        },
-                        {
-                          label: "對子",
-                          value: rows[3].stat.rate,
-                          breakeven: (1 / 12) * 100,
-                          tone: "game-pair",
-                          sublabel: `推 ${fmtNum(rows[3].stat.signals)} 中 ${fmtNum(rows[3].stat.hits)}`,
-                          ...centered((1 / 12) * 100, 8), // be=8.33 → 0.33-16.33
                         },
                       ];
 
@@ -913,29 +865,6 @@ export default function StatsClient() {
                   size="sm"
                   ariaLabel="注額組合"
                 />
-              </div>
-
-              {/* 注區開關（勾選計入哪些注區的盈虧） */}
-              <div className="flex flex-wrap items-center gap-x-4 gap-y-2 mb-3 bg-bg-card/50 border border-white/5 rounded-lg px-4 py-2.5">
-                <span className="text-text-muted text-sm shrink-0">計入注區</span>
-                {([
-                  { key: "banker", label: "莊", color: "var(--color-banker)" },
-                  { key: "player", label: "閒", color: "var(--color-player)" },
-                  { key: "super6", label: "Super6", color: "var(--color-super6)" },
-                  { key: "pair", label: "對子", color: "var(--color-pair)" },
-                ] as const).map((x) => (
-                  <label key={x.key} className="flex items-center gap-1.5 cursor-pointer text-sm select-none">
-                    <input
-                      type="checkbox"
-                      checked={betEnabled[x.key]}
-                      onChange={(e) =>
-                        setBetEnabled((prev) => ({ ...prev, [x.key]: e.target.checked }))
-                      }
-                      className="w-4 h-4 accent-accent cursor-pointer"
-                    />
-                    <span style={{ color: x.color }} className="font-bold">{x.label}</span>
-                  </label>
-                ))}
               </div>
 
               {/* 反水調整 */}

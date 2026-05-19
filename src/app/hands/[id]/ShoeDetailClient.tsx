@@ -165,7 +165,7 @@ export default function ShoeDetailClient({ id }: { id: string }) {
       </div>
 
       {/* 統計概覽 */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+      <div className="grid grid-cols-3 gap-3">
         <InfoCard
           label="莊贏"
           value={`${summary.banker_wins} 場`}
@@ -181,11 +181,6 @@ export default function ShoeDetailClient({ id }: { id: string }) {
           label="和局"
           value={`${summary.tie_wins} 場`}
           sub={summary.total_hands > 0 ? `${(summary.tie_wins / summary.total_hands * 100).toFixed(1)}%` : "—"}
-        />
-        <InfoCard
-          label="Super6 / 對子"
-          value={`${summary.super6_count} / ${summary.pair_p_count + summary.pair_b_count}`}
-          sub={`S6 自${summary.super6_natural_count} 補${summary.super6_draw_count}`}
         />
       </div>
 
@@ -224,10 +219,9 @@ export default function ShoeDetailClient({ id }: { id: string }) {
             const bCards = [h.b1, h.b2, h.b3].filter((c) => c && c !== "");
             const hasEv =
               h.ev_banker != null || h.ev_player != null || h.ev_tie != null;
-            const hasSideBadges = h.is_super6 || h.is_pair_b || h.is_pair_p;
             return (
               <div key={h.hand_num} className="px-4 py-2.5">
-                {/* 第一行：手號 + 牌面 + score + 主結果 */}
+                {/* 手號 + 牌面 + score + 主結果 */}
                 <div className="flex items-center gap-3 flex-wrap">
                   <span className="text-xs text-text-muted w-8 shrink-0 font-mono">#{h.hand_num}</span>
                   <span className="text-sm">
@@ -241,34 +235,13 @@ export default function ShoeDetailClient({ id }: { id: string }) {
                     {h.player_score} : {h.banker_score}
                   </span>
                   <ResultBadge winner={h.winner} />
-                  {/* sm+：副 badges 跟主結果同行（flex-wrap） */}
-                  {h.is_super6 && (
-                    <Badge tone="game-super6" size="sm" className="hidden sm:inline-flex">S6</Badge>
-                  )}
-                  {h.is_pair_b && (
-                    <Badge tone="game-banker" size="sm" className="hidden sm:inline-flex">莊對</Badge>
-                  )}
-                  {h.is_pair_p && (
-                    <Badge tone="game-player" size="sm" className="hidden sm:inline-flex">閒對</Badge>
-                  )}
                 </div>
-                {/* 第二行（mobile only）：副 badges 獨立一行避免破碎 */}
-                {hasSideBadges && (
-                  <div className="flex items-center gap-2 mt-1 ml-8 sm:hidden">
-                    {h.is_super6 && <Badge tone="game-super6" size="sm">S6</Badge>}
-                    {h.is_pair_b && <Badge tone="game-banker" size="sm">莊對</Badge>}
-                    {h.is_pair_p && <Badge tone="game-player" size="sm">閒對</Badge>}
-                  </div>
-                )}
                 {hasEv && (
                   <div className="flex flex-wrap gap-x-2 gap-y-0.5 mt-1 ml-8 text-[10px] font-mono text-text-muted">
                     {[
                       { label: "莊", val: h.ev_banker },
                       { label: "閒", val: h.ev_player },
                       { label: "和", val: h.ev_tie },
-                      { label: "S6", val: h.ev_super6 },
-                      { label: "閒對", val: h.ev_pair_p },
-                      { label: "莊對", val: h.ev_pair_b },
                     ].map(({ label, val }) => {
                       if (val == null) return null;
                       return (

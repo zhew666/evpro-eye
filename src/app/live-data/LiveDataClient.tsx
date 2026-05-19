@@ -456,9 +456,6 @@ export default function LiveDataClient() {
                               { label: "莊", val: ev.ev_banker },
                               { label: "閒", val: ev.ev_player },
                               { label: "和", val: ev.ev_tie },
-                              { label: "S6", val: ev.ev_super6 },
-                              { label: "閒對", val: ev.ev_pair_p },
-                              { label: "莊對", val: ev.ev_pair_b },
                             ].map(({ label, val }) => {
                               if (val == null) return null;
                               return (
@@ -486,14 +483,11 @@ export default function LiveDataClient() {
               <h3 className="text-sm font-bold text-text">EV 面板</h3>
             </div>
             <div className="px-4 py-4">
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-4">
+              <div className="grid grid-cols-3 gap-3 mb-4">
                 {[
                   { label: "莊 EV", value: t.ev_banker },
                   { label: "閒 EV", value: t.ev_player },
                   { label: "和 EV", value: t.ev_tie },
-                  { label: "S6", value: t.ev_super6 },
-                  { label: "閒對", value: t.ev_pair_p },
-                  { label: "莊對", value: t.ev_pair_b },
                 ].map(({ label, value }) => (
                   <div key={label} className="text-center">
                     <div className="text-[11px] sm:text-xs text-text-muted mb-1">{label}</div>
