@@ -526,9 +526,9 @@ export default function StatsClient() {
 
   useEffect(() => { fetchStats(period); }, [period, fetchStats]);
 
-  // 每 60 秒自動刷新
+  // 每 1 小時自動刷新
   useEffect(() => {
-    const timer = setInterval(() => fetchStats(period), 60_000);
+    const timer = setInterval(() => fetchStats(period), 60 * 60 * 1000);
     return () => clearInterval(timer);
   }, [period, fetchStats]);
 
@@ -909,7 +909,7 @@ export default function StatsClient() {
           )}
 
           <p className="text-xs text-text-muted text-right">
-            更新時間：{new Date(data.generated_at).toLocaleString("zh-TW")}（每分鐘刷新）
+            更新時間：{new Date(data.generated_at).toLocaleString("zh-TW")}（每小時刷新）
           </p>
         </>
       )}
